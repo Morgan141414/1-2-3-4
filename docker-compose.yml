@@ -19,6 +19,19 @@ services:
       timeout: 5s
       retries: 5
 
+  mongodb:
+    image: mongo:latest
+    container_name: saphena-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-change-me}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-notification}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
   saphena-api:
     build:
       context: ./services/saphena-api
@@ -39,6 +52,24 @@ services:
       NOTIFICATION_SERVICE_ENABLED: ${NOTIFICATION_SERVICE_ENABLED:-true}
     ports:
       - "8080:8080"
+
+  saphena-notification-api:
+    build:
+      context: ./services/saphena-notification-api
+      dockerfile: Dockerfile
+    container_name: saphena-notification-api
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATA_MONGODB_URI: mongodb://${MONGO_INITDB_ROOT_USERNAME:-admin}:${MONGO_INITDB_ROOT_PASSWORD:-change-me}@mongodb:27017/${MONGO_INITDB_DATABASE:-notification}?authSource=admin
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-change-me}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-change-me}
+      TWILIO_WHATSAPP_FROM_NUMBER: ${TWILIO_WHATSAPP_FROM_NUMBER:-change-me}
+    ports:
+      - "8081:8081"
 
   saphena-web:
     build:
@@ -67,4 +98,5 @@ services:
 
 volumes:
   postgres_data:
+  mongodb_data:
   wwebjs_auth:

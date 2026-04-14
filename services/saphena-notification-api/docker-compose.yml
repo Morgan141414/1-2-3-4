@@ -1,0 +1,29 @@
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=change-me
+      - MONGO_INITDB_DATABASE=notification
+    volumes:
+      - mongodb_data:/data/db
+
+  saphena-notification-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATA_MONGODB_URI: mongodb://admin:change-me@mongodb:27017/notification?authSource=admin
+      TWILIO_ACCOUNT_SID: change-me
+      TWILIO_AUTH_TOKEN: change-me
+      TWILIO_WHATSAPP_FROM_NUMBER: change-me
+    ports:
+      - "8081:8081"
+
+volumes:
+  mongodb_data:

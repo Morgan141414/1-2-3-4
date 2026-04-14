@@ -1,0 +1,13 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://admin:change-me@localhost:27017/notification?authSource=admin}
+      auto-index-creation: true
+
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID}
+  auth-token: ${TWILIO_AUTH_TOKEN}
+  whatsapp-from-number: ${TWILIO_WHATSAPP_FROM_NUMBER}

@@ -6,6 +6,7 @@ Unified workspace for transfer from Team 1 to Team 2.
 
 - `apps/saphena-web` - Angular frontend
 - `services/saphena-api` - Spring Boot backend
+- `services/saphena-notification-api` - Spring Boot notification API backed by MongoDB/Twilio
 - `services/whatsapp-bot` - Node.js WhatsApp bot service
 
 ## Quick Start (Docker)
@@ -18,20 +19,23 @@ Unified workspace for transfer from Team 1 to Team 2.
    - Frontend: `http://localhost:4200`
    - API Swagger: `http://localhost:8080/swagger-ui/index.html`
    - API docs: `http://localhost:8080/v3/api-docs`
+   - Notification API: `http://localhost:8081/api/notifications`
    - WhatsApp bot health: `http://localhost:3000/api/health`
 
 ## Service Ports
 
 - `4200` -> `saphena-web` (nginx container port 80)
 - `8080` -> `saphena-api`
+- `8081` -> `saphena-notification-api`
 - `3000` -> `whatsapp-bot`
 - `5432` -> `postgres`
+- `27017` -> `mongodb`
 
 ## Local Development (without Docker for frontend)
 
 Run backend stack:
 
-- `docker compose up -d postgres whatsapp-bot`
+- `docker compose up -d postgres mongodb whatsapp-bot saphena-notification-api`
 - Start API from `services/saphena-api` (Gradle)
 - Start web from `apps/saphena-web`:
   - `npm install`
