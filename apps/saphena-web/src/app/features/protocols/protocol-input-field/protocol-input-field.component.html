@@ -1,0 +1,48 @@
+<div class="saphena-input-field mb-6 grid grid-cols-[300px_1fr] gap-x-20">
+  <div [ngClass]="{ 'font-medium mt-4' : field().type === protocolFieldType.SUBTITLE }">
+    @if (field().title.trim()) {
+      {{ field().title }}:
+    }
+  </div>
+
+  @if (field().type === protocolFieldType.TEXT) {
+    <input [formControl]="control()"
+           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+  }
+  @else if (field().type === protocolFieldType.NUMBER) {
+    <div>
+      <input [formControl]="control()"
+             type="number"
+             class="w-60 border py-1 px-2 rounded-md focus:outline-blue-400" />
+      <span class="ml-2">{{ field().unit }}</span>
+    </div>
+  }
+  @else if (field().type === protocolFieldType.RADIO) {
+    <div class="flex gap-4 flex-wrap">
+      @for (option of field().options; track option) {
+        <label [ngClass]="{'text-red-500': control().invalid && !control().untouched}"
+               class="cursor-pointer text-nowrap">
+          <input type="radio"
+                 [name]="'radio-' + sectionIndex() + '-' + fieldIndex()"
+                 [formControl]="control()"
+                 [value]="option">
+          {{ option }}
+        </label>
+      }
+    </div>
+  }
+  @else if (field().type === protocolFieldType.SELECT) {
+    <select [formControl]="control()"
+            class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      <option></option>
+      @for (option of field().options; track option) {
+        <option>{{ option }}</option>
+      }
+    </select>
+  }
+  @else if (field().type === protocolFieldType.DATE) {
+    <input [formControl]="control()"
+           type="date"
+           class="w-60 border py-1 px-2 rounded-md focus:outline-blue-400" />
+  }
+</div>

@@ -1,0 +1,12 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.name"
+                   label="Название"
+                   placeholder="Медицинские расходные материалы" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

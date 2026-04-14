@@ -1,0 +1,13 @@
+<label class="font-medium capitalize ml-1">
+  Город
+</label>
+
+<select [formControl]="control()"
+        [compareWith]="compare"
+        class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+  @for (kato of KATO_LIST; track kato.code) {
+    <option [ngValue]="kato">
+      {{ kato.name }}
+    </option>
+  }
+</select>

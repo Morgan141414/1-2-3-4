@@ -1,0 +1,84 @@
+<mat-dialog-content>
+  @if (patient()) {
+    <div class="mb-6 grid grid-cols-2 gap-4">
+      <div>
+        <div class="text-gray-600 text-sm">
+          ФИО
+        </div>
+        <div class="font-medium">
+          {{ getFullname(this.patient()!.firstName, this.patient()!.lastName, this.patient()!.middleName) }}
+        </div>
+      </div>
+      @if (patient()!.isCitizen) {
+        <div>
+          <div class="text-gray-600 text-sm">
+            ИИН
+          </div>
+          <div class="font-medium">
+            {{ patient()!.iin }}
+          </div>
+        </div>
+      }
+      @if (patient()!.documentType) {
+        <div>
+          <div class="text-gray-600 text-sm">
+            Тип документа
+          </div>
+          <div class="font-medium">
+            {{ getPatientDocumentTypeName(patient()!.documentType) }}
+          </div>
+        </div>
+      }
+      @if (patient()!.documentNumber) {
+        <div>
+          <div class="text-gray-600 text-sm">
+            Номер документа
+          </div>
+          <div class="font-medium">
+            {{ patient()!.documentNumber }}
+          </div>
+        </div>
+      }
+      @if (patient()!.issuedAt) {
+        <div>
+          <div class="text-gray-600 text-sm">
+            Дата выдачи
+          </div>
+          <div class="font-medium">
+            {{ patient()!.issuedAt | date: 'dd.MM.yyyy' }}
+          </div>
+        </div>
+      }
+      @if (patient()!.expiresAt) {
+        <div>
+          <div class="text-gray-600 text-sm">
+            Годен до
+          </div>
+          <div class="font-medium">
+            {{ patient()!.expiresAt | date: 'dd.MM.yyyy' }}
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <label class="saphena-input-field">
+      <textarea placeholder="Комментарий"
+                [(ngModel)]="comment"
+                class="w-full min-h-16 border py-1 px-2 rounded-md focus:outline-blue-400">
+      </textarea>
+  </label>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex gap-4">
+  <button class="text-sm font-medium text-white bg-green-600 px-4 py-2 rounded-md hover:bg-green-500 active:scale-95 disabled:opacity-60"
+          [disabled]="loading()"
+          (click)="verify()">
+    Подтвердить
+  </button>
+  <button class="text-sm font-medium text-white bg-red-600 px-4 py-2 rounded-md hover:bg-red-500 active:scale-95 disabled:opacity-60"
+          [disabled]="loading()"
+          (click)="reject()">
+    Отправить на корректировку
+  </button>
+</mat-dialog-actions>

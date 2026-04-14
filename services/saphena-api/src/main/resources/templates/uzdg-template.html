@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        @page {
+            size: A4 portrait;
+            @top-center {
+                content: element(header);
+            }
+            @bottom-center {
+                content: element(footer);
+            }
+            margin: 0 0 35mm;
+            padding-top: 213px;
+        }
+        * {
+            font-family: Roboto, Arial, sans-serif;
+        }
+        body {
+            font-size: 14px;
+            counter-reset: page 0;
+        }
+
+        .header {
+            position: running(header);
+            background-color: #f7f7f7;
+            color: black;
+            height: 200px;
+            border-bottom: 3px solid black;
+        }
+        .header__table {
+            height: 100%;
+            width: 100%;
+            border-spacing: 10px;
+            padding: 8mm 8mm 5mm;
+        }
+        .header__table__top {
+            width: 100%;
+            vertical-align: top;
+        }
+        .header__table__top__clinic-name {
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .header__table__top__organization {
+            width:33%;
+            font-size: 12px
+        }
+        .header__table__bottom {
+            height: 100%;
+            vertical-align: bottom;
+        }
+        .header__table__bottom__procedure-name {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .footer {
+            position: running(footer);
+            border-top: black 1px solid;
+            margin-right: 8mm;
+            margin-left: 8mm;
+        }
+        .footer__table {
+            width: 100%;
+            border-spacing: 4px 10px;
+        }
+        .footer #page-number::before {
+            counter-increment: page;
+            content: counter(page);
+            position: absolute;
+            right: 0;
+            bottom: 4px;
+            color: gray;
+        }
+
+        .patient-info {
+            margin-right: 6mm;
+            margin-left: 6mm;
+            margin-bottom: 16px;
+        }
+        .patient-info__table {
+            border-spacing: 3mm 0;
+            width: 100%;
+        }
+        .patient-info__table__title {
+            width: 33%;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .patient-info__table__patient-details {
+            width: 50%;
+        }
+        .patient-info__table__patient-details div {
+            margin-bottom: 8px;
+        }
+
+        .content {
+            margin-right: 6mm;
+            margin-left: 6mm;
+        }
+        .content__section {
+            margin-bottom: 12mm;
+        }
+        .content__section:last-child {
+            margin-bottom: 0;
+        }
+        .content_section-title {
+            margin: 0 3mm 3mm;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .content__table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .content table tr td {
+            padding: 8px 3mm;
+            vertical-align: top;
+        }
+        .content table tr:nth-child(odd) {
+            background: #f3f3f3;
+        }
+    </style>
+</head>
+    <body>
+        <div class="header">
+            <table class="header__table">
+                <tr class="header__table__top">
+                    <td class="header__table__top__clinic-name">
+                        <img th:if="${not #strings.isEmpty(organizationLogo)}"
+                             th:src="${organizationLogo}"
+                             style="width: auto; height: 60px;"
+                             alt="" />
+                        <div th:if="${#strings.isEmpty(organizationLogo)}"
+                             th:text="${organizationName}"
+                             style="font-size: 30px"></div>
+                    </td>
+                    <td class="header__table__top__organization">
+                        <div th:text="${organizationName}"></div>
+                        <div th:text="${address}"></div>
+                        <div th:text="${'+' + organizationPhone}"></div>
+                    </td>
+                </tr>
+                <tr class="header__table__bottom">
+                    <td class="header__table__bottom__procedure-name">
+                        <div th:text="${protocolName}"></div>
+                    </td>
+                    <td>
+                        <div style="margin-bottom: 4px">
+                            <span th:if="${protocolLang == 'ru'}">Дата</span>
+                            <span th:if="${protocolLang == 'kk'}">Күн</span>
+                            <span th:if="${protocolLang == 'en'}">Date</span>
+                        </div>
+                        <div th:text="${protocolDate}"
+                             style="font-size: 12px"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <table class="footer__table">
+                <tr>
+                    <td style="width:33%; font-weight: bold;">
+                        <span th:text="${specName}"></span>
+                    </td>
+                    <td style="font-weight: bold">
+                        <span th:if="${protocolLang == 'ru'}">Ассистент</span>
+                        <span th:if="${protocolLang == 'kk'}">Көмекші</span>
+                        <span th:if="${protocolLang == 'en'}">Assistant</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td th:text="${doctorShortname}"></td>
+                    <td th:text="${assistantShortname}"></td>
+                </tr>
+            </table>
+            <div id="page-number"></div>
+        </div>
+
+        <div class="patient-info">
+            <table class="patient-info__table">
+                <tr style="vertical-align: top">
+                    <td class="patient-info__table__title">
+                        <span th:if="${protocolLang == 'ru'}">Данные пациента</span>
+                        <span th:if="${protocolLang == 'kk'}">Пациент деректері</span>
+                        <span th:if="${protocolLang == 'en'}">Patient data</span>
+                    </td>
+                    <td class="patient-info__table__patient-details">
+                        <div th:text="${patientFullname}"></div>
+                        <div>
+                            <span th:if="${protocolLang == 'ru'}">ИИН: </span>
+                            <span th:if="${protocolLang == 'kk'}">ЖСН: </span>
+                            <span th:if="${protocolLang == 'en'}">IIN: </span>
+                            <span th:text="${patientIin}"></span>
+                        </div>
+                        <div>
+                            <span th:if="${protocolLang == 'ru'}">Тел: </span>
+                            <span th:if="${protocolLang == 'kk'}">Тел: </span>
+                            <span th:if="${protocolLang == 'en'}">Tel: </span>
+                            +<span th:text="${patientPhone}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:if="${protocolLang == 'ru'}">Дата рождения:</div>
+                        <div th:if="${protocolLang == 'kk'}">Туған жылы:</div>
+                        <div th:if="${protocolLang == 'en'}">Date of birth:</div>
+                        <div th:text="${patientBirthDate}"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content">
+            <div class="content__section">
+                <div class="content_section-title">
+                    <span th:if="${protocolLang == 'ru'}">Правая нижняя конечность</span>
+                    <span th:if="${protocolLang == 'kk'}">Оң жақ төменгі аяқ</span>
+                    <span th:if="${protocolLang == 'en'}">Right lower limb</span>
+                </div>
+
+                <table class="content__table">
+                    <tr th:if="${not #strings.isEmpty(bpvr_rr) or not #strings.isEmpty(bpvr_r) or not #strings.isEmpty(bpvr_s) or not #strings.isEmpty(bpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Большая подкожная вена (БПВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Үлкен көк тамыр (GSV)</span>
+                                <span th:if="${protocolLang == 'en'}">Great saphenous vein (GSV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(bpvr_rr) and (not #strings.isEmpty(bpvr_r) or not #strings.isEmpty(bpvr_s) or not #strings.isEmpty(bpvr_t)) ? bpvr_rr + ', ' : bpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(bpvr_r) and (not #strings.isEmpty(bpvr_s) or not #strings.isEmpty(bpvr_t)) ? bpvr_r + ', ' : bpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(bpvr_s) and not #strings.isEmpty(bpvr_t) ? bpvr_s + ', ' : bpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${bpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(npvr_rr) or not #strings.isEmpty(npvr_r) or not #strings.isEmpty(npvr_s) or not #strings.isEmpty(npvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Наружная половая вена (НПВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Сыртқы жыныс венасы (EVV)</span>
+                                <span th:if="${protocolLang == 'en'}">External genital vein (EVV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(npvr_rr) and (not #strings.isEmpty(npvr_r) or not #strings.isEmpty(npvr_s) or not #strings.isEmpty(npvr_t)) ? npvr_rr + ', ' : npvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(npvr_r) and (not #strings.isEmpty(npvr_s) or not #strings.isEmpty(npvr_t)) ? npvr_r + ', ' : npvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(npvr_s) and not #strings.isEmpty(npvr_t) ? npvr_s + ', ' : npvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${npvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pdpvr_rr) or not #strings.isEmpty(pdpvr_r) or not #strings.isEmpty(pdpvr_s) or not #strings.isEmpty(pdpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Передняя добавочная подкожная вена (ПДПВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Алдыңғы қосалқы көктамыр (AASV)</span>
+                                <span th:if="${protocolLang == 'en'}">Anterior accessory saphenous vein (AASV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(pdpvr_rr) and (not #strings.isEmpty(pdpvr_r) or not #strings.isEmpty(pdpvr_s) or not #strings.isEmpty(pdpvr_t)) ? pdpvr_rr + ', ' : pdpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(pdpvr_r) and (not #strings.isEmpty(pdpvr_s) or not #strings.isEmpty(pdpvr_t)) ? pdpvr_r + ', ' : pdpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(pdpvr_s) and not #strings.isEmpty(pdpvr_t) ? pdpvr_s + ', ' : pdpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${pdpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(lbpvr_rr) or not #strings.isEmpty(lbpvr_r) or not #strings.isEmpty(lbpvr_s) or not #strings.isEmpty(lbpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Латеральный приток БПВ</span>
+                                <span th:if="${protocolLang == 'kk'}">ГСВ-ның бүйірлік саласы</span>
+                                <span th:if="${protocolLang == 'en'}">Lateral tributary of the GSV</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(lbpvr_rr) and (not #strings.isEmpty(lbpvr_r) or not #strings.isEmpty(lbpvr_s) or not #strings.isEmpty(lbpvr_t)) ? lbpvr_rr + ', ' : lbpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lbpvr_r) and (not #strings.isEmpty(lbpvr_s) or not #strings.isEmpty(lbpvr_t)) ? lbpvr_r + ', ' : lbpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lbpvr_s) and not #strings.isEmpty(lbpvr_t) ? lbpvr_s + ', ' : lbpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${lbpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(mbpvr_rr) or not #strings.isEmpty(mbpvr_r) or not #strings.isEmpty(mbpvr_s) or not #strings.isEmpty(mbpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Медиальный приток БПВ</span>
+                                <span th:if="${protocolLang == 'kk'}">GSV-нің медиальды саласы</span>
+                                <span th:if="${protocolLang == 'en'}">Medial tributary of the GSV</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(mbpvr_rr) and (not #strings.isEmpty(mbpvr_r) or not #strings.isEmpty(mbpvr_s) or not #strings.isEmpty(mbpvr_t)) ? mbpvr_rr + ', ' : mbpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mbpvr_r) and (not #strings.isEmpty(mbpvr_s) or not #strings.isEmpty(mbpvr_t)) ? mbpvr_r + ', ' : mbpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mbpvr_s) and not #strings.isEmpty(mbpvr_t) ? mbpvr_s + ', ' : mbpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${mbpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(vgr_rr) or not #strings.isEmpty(vgr_r) or not #strings.isEmpty(vgr_s)}">
+                        <td style="width: 33%">
+                            <div>v. Giacomini</div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(vgr_rr) and (not #strings.isEmpty(vgr_r) or not #strings.isEmpty(vgr_s)) ? vgr_rr + ', ' : vgr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vgr_r) and not #strings.isEmpty(vgr_s) ? vgr_r + ', ' : vgr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${vgr_s}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(vpr_rr) or not #strings.isEmpty(vpr_r) or not #strings.isEmpty(vpr_s) or not #strings.isEmpty(vpr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Вены промежности</span>
+                                <span th:if="${protocolLang == 'kk'}">Перинейдің веналары</span>
+                                <span th:if="${protocolLang == 'en'}">Veins of the perineum</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(vpr_rr) and (not #strings.isEmpty(vpr_r) or not #strings.isEmpty(vpr_s) or not #strings.isEmpty(vpr_t)) ? vpr_rr + ', ' : vpr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vpr_r) and (not #strings.isEmpty(vpr_s) or not #strings.isEmpty(vpr_t)) ? vpr_r + ', ' : vpr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vpr_s) and not #strings.isEmpty(vpr_t) ? vpr_s + ', ' : vpr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${vpr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(mpvr_rr) or not #strings.isEmpty(mpvr_r) or not #strings.isEmpty(mpvr_s) or not #strings.isEmpty(mpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Малая подкожная вена</span>
+                                <span th:if="${protocolLang == 'kk'}">Ұсақ көктамыр</span>
+                                <span th:if="${protocolLang == 'en'}">Small saphenous vein</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(mpvr_rr) and (not #strings.isEmpty(mpvr_r) or not #strings.isEmpty(mpvr_s) or not #strings.isEmpty(mpvr_t)) ? mpvr_rr + ', ' : mpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mpvr_r) and (not #strings.isEmpty(mpvr_s) or not #strings.isEmpty(mpvr_t)) ? mpvr_r + ', ' : mpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mpvr_s) and not #strings.isEmpty(mpvr_t) ? mpvr_s + ', ' : mpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${mpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(vtr_rr) or not #strings.isEmpty(vtr_r) or not #strings.isEmpty(vtr_s) or not #strings.isEmpty(vtr_t)}">
+                        <td style="width: 33%">
+                            <div>v.Thieri</div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(vtr_rr) and (not #strings.isEmpty(vtr_r) or not #strings.isEmpty(vtr_s) or not #strings.isEmpty(vtr_t)) ? vtr_rr + ', ' : vtr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vtr_r) and (not #strings.isEmpty(vtr_s) or not #strings.isEmpty(vtr_t)) ? vtr_r + ', ' : vtr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vtr_s) and not #strings.isEmpty(vtr_t) ? vtr_s + ', ' : vtr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${vtr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pvbr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Перфорантные вены бедра</span>
+                                <span th:if="${protocolLang == 'kk'}">Санның перфорациялық веналары</span>
+                                <span th:if="${protocolLang == 'en'}">Perforating veins of the thigh</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${pvbr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pvgr)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Перфорантные вены голени</span>
+                                <span th:if="${protocolLang == 'kk'}">Аяқтың перфорациялық веналары</span>
+                                <span th:if="${protocolLang == 'en'}">Perforating veins of the leg</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${pvgr}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(gbvr) or not #strings.isEmpty(gbvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Глубокая бедренная вена (ГБВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Терең феморальды вена (DFV)</span>
+                                <span th:if="${protocolLang == 'en'}">Deep femoral vein (DFV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(gbvr) and not #strings.isEmpty(gbvr_t) ? gbvr + ', ' : gbvr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${gbvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pvr) or not #strings.isEmpty(pvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Подколенная вена (ПкВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Қалқымалы вена (Pv)</span>
+                                <span th:if="${protocolLang == 'en'}">Popliteal vein (Pv)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(pvr) and not #strings.isEmpty(pvr_t) ? pvr + ', ' : pvr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${pvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(mnpvr_rr) or not #strings.isEmpty(mnpvr_r) or not #strings.isEmpty(mnpvr_s) or not #strings.isEmpty(mnpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Медиальная наружная половая вена</span>
+                                <span th:if="${protocolLang == 'kk'}">Медиальды сыртқы пудендальды вена</span>
+                                <span th:if="${protocolLang == 'en'}">Medial external pudendal vein</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(mnpvr_rr) and (not #strings.isEmpty(mnpvr_r) or not #strings.isEmpty(mnpvr_s) or not #strings.isEmpty(mnpvr_t)) ? mnpvr_rr + ', ' : mnpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mnpvr_r) and (not #strings.isEmpty(mnpvr_s) or not #strings.isEmpty(mnpvr_t)) ? mnpvr_r + ', ' : mnpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mnpvr_s) and not #strings.isEmpty(mnpvr_t) ? mnpvr_s + ', ' : mnpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${mnpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(lnpvr_rr) or not #strings.isEmpty(lnpvr_r) or not #strings.isEmpty(lnpvr_s) or not #strings.isEmpty(lnpvr_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Латеральная наружная половая вена</span>
+                                <span th:if="${protocolLang == 'kk'}">Латеральды сыртқы пудендальды вена</span>
+                                <span th:if="${protocolLang == 'en'}">Lateral external pudendal vein</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(lnpvr_rr) and (not #strings.isEmpty(lnpvr_r) or not #strings.isEmpty(lnpvr_s) or not #strings.isEmpty(lnpvr_t)) ? lnpvr_rr + ', ' : lnpvr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lnpvr_r) and (not #strings.isEmpty(lnpvr_s) or not #strings.isEmpty(lnpvr_t)) ? lnpvr_r + ', ' : lnpvr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lnpvr_s) and not #strings.isEmpty(lnpvr_t) ? lnpvr_s + ', ' : lnpvr_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${lnpvr_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="content__section">
+                <div class="content_section-title">
+                    <span th:if="${protocolLang == 'ru'}">Левая нижняя конечность</span>
+                    <span th:if="${protocolLang == 'kk'}">Сол жақ төменгі аяқ</span>
+                    <span th:if="${protocolLang == 'en'}">Left lower limb</span>
+                </div>
+
+                <table class="content__table">
+                    <tr th:if="${not #strings.isEmpty(bpvl_rr) or not #strings.isEmpty(bpvl_r) or not #strings.isEmpty(bpvl_s) or not #strings.isEmpty(bpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Большая подкожная вена (БПВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Үлкен көк тамыр (GSV)</span>
+                                <span th:if="${protocolLang == 'en'}">Great saphenous vein (GSV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(bpvl_rr) and (not #strings.isEmpty(bpvl_r) or not #strings.isEmpty(bpvl_s) or not #strings.isEmpty(bpvl_t)) ? bpvl_rr + ', ' : bpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(bpvl_r) and (not #strings.isEmpty(bpvl_s) or not #strings.isEmpty(bpvl_t)) ? bpvl_r + ', ' : bpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(bpvl_s) and not #strings.isEmpty(bpvl_t) ? bpvl_s + ', ' : bpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${bpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(npvl_rr) or not #strings.isEmpty(npvl_r) or not #strings.isEmpty(npvl_s) or not #strings.isEmpty(npvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Наружная половая вена (НПВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Сыртқы жыныс венасы (EVV)</span>
+                                <span th:if="${protocolLang == 'en'}">External genital vein (EVV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(npvl_rr) and (not #strings.isEmpty(npvl_r) or not #strings.isEmpty(npvl_s) or not #strings.isEmpty(npvl_t)) ? npvl_rr + ', ' : npvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(npvl_r) and (not #strings.isEmpty(npvl_s) or not #strings.isEmpty(npvl_t)) ? npvl_r + ', ' : npvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(npvl_s) and not #strings.isEmpty(npvl_t) ? npvl_s + ', ' : npvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${npvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pdpvl_rr) or not #strings.isEmpty(pdpvl_r) or not #strings.isEmpty(pdpvl_s) or not #strings.isEmpty(pdpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Передняя добавочная подкожная вена (ПДПВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Алдыңғы қосалқы көктамыр (AASV)</span>
+                                <span th:if="${protocolLang == 'en'}">Anterior accessory saphenous vein (AASV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(pdpvl_rr) and (not #strings.isEmpty(pdpvl_r) or not #strings.isEmpty(pdpvl_s) or not #strings.isEmpty(pdpvl_t)) ? pdpvl_rr + ', ' : pdpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(pdpvl_r) and (not #strings.isEmpty(pdpvl_s) or not #strings.isEmpty(pdpvl_t)) ? pdpvl_r + ', ' : pdpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(pdpvl_s) and not #strings.isEmpty(pdpvl_t) ? pdpvl_s + ', ' : pdpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${pdpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(lbpvl_rr) or not #strings.isEmpty(lbpvl_r) or not #strings.isEmpty(lbpvl_s) or not #strings.isEmpty(lbpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Латеральный приток БПВ</span>
+                                <span th:if="${protocolLang == 'kk'}">ГСВ-ның бүйірлік саласы</span>
+                                <span th:if="${protocolLang == 'en'}">Lateral tributary of the GSV</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(lbpvl_rr) and (not #strings.isEmpty(lbpvl_r) or not #strings.isEmpty(lbpvl_s) or not #strings.isEmpty(lbpvl_t)) ? lbpvl_rr + ', ' : lbpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lbpvl_r) and (not #strings.isEmpty(lbpvl_s) or not #strings.isEmpty(lbpvl_t)) ? lbpvl_r + ', ' : lbpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lbpvl_s) and not #strings.isEmpty(lbpvl_t) ? lbpvl_s + ', ' : lbpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${lbpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(mbpvl_rr) or not #strings.isEmpty(mbpvl_r) or not #strings.isEmpty(mbpvl_s) or not #strings.isEmpty(mbpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Медиальный приток БПВ</span>
+                                <span th:if="${protocolLang == 'kk'}">GSV-нің медиальды саласы</span>
+                                <span th:if="${protocolLang == 'en'}">Medial tributary of the GSV</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(mbpvl_rr) and (not #strings.isEmpty(mbpvl_r) or not #strings.isEmpty(mbpvl_s) or not #strings.isEmpty(mbpvl_t)) ? mbpvl_rr + ', ' : mbpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mbpvl_r) and (not #strings.isEmpty(mbpvl_s) or not #strings.isEmpty(mbpvl_t)) ? mbpvl_r + ', ' : mbpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mbpvl_s) and not #strings.isEmpty(mbpvl_t) ? mbpvl_s + ', ' : mbpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${mbpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(vgr_rr) or not #strings.isEmpty(vgr_r) or not #strings.isEmpty(vgr_s)}">
+                        <td style="width: 33%">
+                            <div>v. Giacomini</div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(vgr_rr) and (not #strings.isEmpty(vgr_r) or not #strings.isEmpty(vgr_s)) ? vgr_rr + ', ' : vgr_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vgr_r) and not #strings.isEmpty(vgr_s) ? vgr_r + ', ' : vgr_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${vgr_s}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(vpl_rr) or not #strings.isEmpty(vpl_r) or not #strings.isEmpty(vpl_s) or not #strings.isEmpty(vpl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Вены промежности</span>
+                                <span th:if="${protocolLang == 'kk'}">Перинейдің веналары</span>
+                                <span th:if="${protocolLang == 'en'}">Veins of the perineum</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(vpl_rr) and (not #strings.isEmpty(vpl_r) or not #strings.isEmpty(vpl_s) or not #strings.isEmpty(vpl_t)) ? vpl_rr + ', ' : vpl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vpl_r) and (not #strings.isEmpty(vpl_s) or not #strings.isEmpty(vpl_t)) ? vpl_r + ', ' : vpl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vpl_s) and not #strings.isEmpty(vpl_t) ? vpl_s + ', ' : vpl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${vpl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(mpvl_rr) or not #strings.isEmpty(mpvl_r) or not #strings.isEmpty(mpvl_s) or not #strings.isEmpty(mpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Малая подкожная вена</span>
+                                <span th:if="${protocolLang == 'kk'}">Ұсақ көктамыр</span>
+                                <span th:if="${protocolLang == 'en'}">Small saphenous vein</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(mpvl_rr) and (not #strings.isEmpty(mpvl_r) or not #strings.isEmpty(mpvl_s) or not #strings.isEmpty(mpvl_t)) ? mpvl_rr + ', ' : mpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mpvl_r) and (not #strings.isEmpty(mpvl_s) or not #strings.isEmpty(mpvl_t)) ? mpvl_r + ', ' : mpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mpvl_s) and not #strings.isEmpty(mpvl_t) ? mpvl_s + ', ' : mpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${mpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(vtl_rr) or not #strings.isEmpty(vtl_r) or not #strings.isEmpty(vtl_s) or not #strings.isEmpty(vtl_t)}">
+                        <td style="width: 33%">
+                            <div>v.Thieri</div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(vtl_rr) and (not #strings.isEmpty(vtl_r) or not #strings.isEmpty(vtl_s) or not #strings.isEmpty(vtl_t)) ? vtl_rr + ', ' : vtl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vtl_r) and (not #strings.isEmpty(vtl_s) or not #strings.isEmpty(vtl_t)) ? vtl_r + ', ' : vtl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(vtl_s) and not #strings.isEmpty(vtl_t) ? vtl_s + ', ' : vtl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${vtl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pvbl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Перфорантные вены бедра</span>
+                                <span th:if="${protocolLang == 'kk'}">Санның перфорациялық веналары</span>
+                                <span th:if="${protocolLang == 'en'}">Perforating veins of the thigh</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${pvbl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pvgl)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Перфорантные вены голени</span>
+                                <span th:if="${protocolLang == 'kk'}">Аяқтың перфорациялық веналары</span>
+                                <span th:if="${protocolLang == 'en'}">Perforating veins of the leg</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${pvgl}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(gbvl) or not #strings.isEmpty(gbvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Глубокая бедренная вена (ГБВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Терең феморальды вена (DFV)</span>
+                                <span th:if="${protocolLang == 'en'}">Deep femoral vein (DFV)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(gbvl) and not #strings.isEmpty(gbvl_t) ? gbvl + ', ' : gbvl}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${gbvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${not #strings.isEmpty(pvl) or not #strings.isEmpty(pvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Подколенная вена (ПкВ)</span>
+                                <span th:if="${protocolLang == 'kk'}">Қалқымалы вена (Pv)</span>
+                                <span th:if="${protocolLang == 'en'}">Popliteal vein (Pv)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(pvl) and not #strings.isEmpty(pvl_t) ? pvl + ', ' : pvl}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${pvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${not #strings.isEmpty(mnpvl_rr) or not #strings.isEmpty(mnpvl_r) or not #strings.isEmpty(mnpvl_s) or not #strings.isEmpty(mnpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Медиальная наружная половая вена</span>
+                                <span th:if="${protocolLang == 'kk'}">Медиальды сыртқы пудендальды вена</span>
+                                <span th:if="${protocolLang == 'en'}">Medial external pudendal vein</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(mnpvl_rr) and (not #strings.isEmpty(mnpvl_r) or not #strings.isEmpty(mnpvl_s) or not #strings.isEmpty(mnpvl_t)) ? mnpvl_rr + ', ' : mnpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mnpvl_r) and (not #strings.isEmpty(mnpvl_s) or not #strings.isEmpty(mnpvl_t)) ? mnpvl_r + ', ' : mnpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(mnpvl_s) and not #strings.isEmpty(mnpvl_t) ? mnpvl_s + ', ' : mnpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${mnpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${not #strings.isEmpty(lnpvl_rr) or not #strings.isEmpty(lnpvl_r) or not #strings.isEmpty(lnpvl_s) or not #strings.isEmpty(lnpvl_t)}">
+                        <td style="width: 33%">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Латеральная наружная половая вена</span>
+                                <span th:if="${protocolLang == 'kk'}">Латеральды сыртқы пудендальды вена</span>
+                                <span th:if="${protocolLang == 'en'}">Lateral external pudendal vein</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span th:text="${not #strings.isEmpty(lnpvl_rr) and (not #strings.isEmpty(lnpvl_r) or not #strings.isEmpty(lnpvl_s) or not #strings.isEmpty(lnpvl_t)) ? lnpvl_rr + ', ' : lnpvl_rr}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lnpvl_r) and (not #strings.isEmpty(lnpvl_s) or not #strings.isEmpty(lnpvl_t)) ? lnpvl_r + ', ' : lnpvl_r}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${not #strings.isEmpty(lnpvl_s) and not #strings.isEmpty(lnpvl_t) ? lnpvl_s + ', ' : lnpvl_s}"
+                                  style="white-space: pre-line"></span>
+                            <span th:text="${lnpvl_t}"
+                                  style="white-space: pre-line"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

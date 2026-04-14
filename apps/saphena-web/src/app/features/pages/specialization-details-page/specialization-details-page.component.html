@@ -1,0 +1,29 @@
+<div class="flex items-center justify-between mb-6">
+  <div class="text-lg font-medium">
+    {{ specializationName() }}
+  </div>
+
+  @if (activeTab() === 'procedures') {
+    <button (click)="openAddProcedurePanel()"
+            class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+      Добавить услугу
+    </button>
+  }
+  @else if (activeTab() === 'documents') {
+    <button (click)="openAddSpecializationDocumentPanel()"
+            class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+      Добавить документ
+    </button>
+  }
+</div>
+
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="selectTab($event)" />
+
+@if (activeTab() === 'procedures') {
+  <app-procedure-table [specializationId]="id()" />
+}
+@else if (activeTab() === 'documents') {
+  <app-spec-doc-table [specializationId]="id()" />
+}

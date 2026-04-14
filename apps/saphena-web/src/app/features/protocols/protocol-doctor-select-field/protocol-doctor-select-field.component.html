@@ -1,0 +1,20 @@
+<div class="saphena-input-field grid grid-cols-[300px_1fr] gap-x-20">
+  <div>
+    @if (specialization()?.name) {
+      {{ specialization()!.name }}:
+    }
+  </div>
+
+  <div class="mb-6">
+    <mat-select multiple
+                [formControl]="control().controls.doctorIds"
+                (selectionChange)="onChange()"
+                class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      @for (doctor of doctors(); track doctor.id) {
+        <mat-option [value]="doctor.id">
+          {{ doctorFullname(doctor) }}
+        </mat-option>
+      }
+    </mat-select>
+  </div>
+</div>

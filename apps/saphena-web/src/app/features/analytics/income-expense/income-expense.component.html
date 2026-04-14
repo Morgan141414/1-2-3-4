@@ -1,0 +1,34 @@
+<app-year-month-filter (searchClicked)="getAnalytics($event.year, $event.month)" />
+
+
+<div class="flex gap-10">
+  <div class="w-96">
+    <div class="text-center font-medium mb-4">
+      Доход -
+      {{ incomeAmount() | mask: 'separator' }} тг.
+    </div>
+    @if (incomeChartLabels() && incomeChartDatasets()) {
+      <canvas baseChart
+              type="pie"
+              [labels]="incomeChartLabels()!"
+              [datasets]="incomeChartDatasets()!"
+              [options]="pieChartOptions">
+      </canvas>
+    }
+  </div>
+
+  <div class="w-96">
+    <div class="text-center font-medium mb-4">
+      Расход -
+      {{ expenseAmount() | mask: 'separator' }} тг.
+    </div>
+    @if (expenseChartLabels() && expenseChartDatasets()) {
+      <canvas baseChart
+              type="pie"
+              [labels]="expenseChartLabels()!"
+              [datasets]="expenseChartDatasets()!"
+              [options]="pieChartOptions">
+      </canvas>
+    }
+  </div>
+</div>

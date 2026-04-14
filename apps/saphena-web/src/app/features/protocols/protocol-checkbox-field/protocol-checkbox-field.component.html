@@ -1,0 +1,20 @@
+<div class="saphena-input-field mb-6 grid grid-cols-[300px_1fr] gap-x-20">
+  <div>
+    @if (field().title.trim()) {
+      {{ field().title }}
+    }
+  </div>
+
+  <div class="flex gap-4 flex-wrap">
+    @for (option of field().options; track option) {
+      <label [ngClass]="{'text-red-500': control().invalid && !control().untouched}"
+             class="cursor-pointer text-nowrap">
+        <input type="checkbox"
+               [value]="option"
+               [checked]="selected().includes(option)"
+               (change)="onChange($event)">
+        {{ option }}
+      </label>
+    }
+  </div>
+</div>

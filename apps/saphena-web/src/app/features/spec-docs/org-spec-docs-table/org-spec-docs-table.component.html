@@ -1,0 +1,42 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">Название</td>
+  <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (osd of orgSpecDocs(); track osd.id) {
+      <tr class="border-b hover:bg-gray-100"
+          [ngClass]="{ 'bg-gray-50' : osd.deleted}">
+        <td class="px-2 py-2"
+            [ngClass]="{ 'text-gray-500' : osd.deleted}">
+          {{ osd.specDoc.name }}
+        </td>
+        <td class="px-2 py-2">
+          @if (osd.deleted) {
+            <button class="hover:text-green-500 active:scale-95"
+                    (click)="openRestoreDialog(osd)">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          } @else {
+            <button [matMenuTriggerFor]="menu"
+                    class="w-4 hover:text-blue-500 active:scale-95">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item
+                      (click)="openProtocolDialog(osd.specDoc)">
+                <i class="fa-solid fa-file-medical mr-1 text-blue-500"></i>
+                Протокол
+              </button>
+              <button mat-menu-item
+                      (click)="openDeleteDialog(osd)">
+                <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+                Удалить
+              </button>
+            </mat-menu>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

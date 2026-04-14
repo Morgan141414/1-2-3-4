@@ -1,0 +1,13 @@
+<div class="mb-6 pb-4 border-b border-gray-300 flex justify-between items-center">
+  <div class="font-medium text-xl">
+    {{ pageTitle() }}
+  </div>
+
+  <button (click)="closePanel()"
+          tabindex="-1"
+          class="w-6 h-6 bg-blue-500 rounded-md hover:bg-blue-400 active:scale-95">
+    <i class="fa-solid fa-xmark text-white"></i>
+  </button>
+</div>
+
+<router-outlet name="panel" />

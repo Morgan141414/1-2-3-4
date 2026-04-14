@@ -1,0 +1,32 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">Код</td>
+  <td class="px-2 pb-2">Название</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (room of rooms(); track room.id) {
+      <tr class="border-b hover:bg-gray-100">
+        <td class="px-2 py-2">{{ room.code }}</td>
+        <td class="px-2 py-2">{{ room.name }}</td>
+        <td class="px-2 py-2">
+          <button [matMenuTriggerFor]="menu"
+                  class="w-4 hover:text-blue-500">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="openEditRoomPanel(room.id)">
+              <i class="fa-solid fa-pencil mr-1 text-yellow-500"></i>
+              Редактировать
+            </button>
+            <button mat-menu-item (click)="openDeleteDialog(room)">
+              <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+              Удалить
+            </button>
+          </mat-menu>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

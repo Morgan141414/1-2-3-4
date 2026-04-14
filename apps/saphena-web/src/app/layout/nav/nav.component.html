@@ -1,0 +1,22 @@
+<nav class="overflow-auto p-4 bg-slate-100 h-full border-r border-gray-300 flex flex-col">
+  <div class="mt-5 ml-4 mb-10 font-bold text-xl">QorMed</div>
+  <div class="flex-1 flex flex-col justify-between">
+    <ul class="w-56">
+      @for (route of getRoutes(); track route) {
+        <li [routerLink]="route.path"
+            [ngClass]="{'bg-blue-500 text-white' : isActive(route.path)}"
+            class="group mb-1 px-5 py-3 rounded-md flex items-center font-medium cursor-pointer hover:bg-blue-300 hover:text-white active:scale-95">
+          <i [class]="route.icon"
+             class="w-9 text-xl text-blue-600 group-hover:text-inherit"></i>
+          {{ route.name }}
+        </li>
+      }
+    </ul>
+
+    <div (click)="signOut()"
+         class="group mt-6 mb-8 px-5 py-3 flex items-center font-medium cursor-pointer hover:bg-blue-300 hover:text-white rounded-md">
+      <i class="fa-solid fa-right-from-bracket w-9 text-xl text-blue-600 group-hover:text-white"></i>
+      Выйти
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,29 @@
+<div>
+  @if (field().title.trim()) {
+    {{ field().title }}:
+  }
+</div>
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2"></td>
+    @for (th of field().tableColumns; track th.key) {
+      <td class="px-2 pb-2">{{ th.title }}</td>
+    }
+  </thead>
+  <tbody>
+    @for (tr of field().tableRows; track tr.key) {
+      <tr class="border-b">
+        <td class="px-2 py-2">{{ tr.title }}</td>
+        @for (th of field().tableColumns; track th.key) {
+          <td class="px-2 py-2">
+            <input [value]="control().controls.tableData.value[cellKey(tr.key, th.key)] ?? ''"
+                   (input)="onCellInput(tr.key, th.key, $any($event.target).value)"
+                   class="w-full border py-1 px-2 rounded-md focus:outline-blue-400"
+                   [ngClass]="{ 'border-red-500' : !control().controls.tableData.untouched && control().controls.tableData.invalid }">
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

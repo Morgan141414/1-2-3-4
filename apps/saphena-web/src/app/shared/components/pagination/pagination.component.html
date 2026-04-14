@@ -1,0 +1,40 @@
+<div class="mt-4 w-full">
+  <div class="w-fit mx-auto flex gap-1">
+    <button (click)="pageChanged.emit(0)"
+            [disabled]="number() === 0"
+            class="flex justify-center items-center border-2 rounded w-6 h-8
+          hover:border-blue-400 active:scale-95 disabled:text-gray-500 disabled:border-gray-200">
+      <i class="fa-solid fa-angles-left"></i>
+    </button>
+    <button (click)="pageChanged.emit(number() - 1)"
+            [disabled]="number() === 0"
+            class="flex justify-center items-center border-2 rounded w-6 h-8
+          hover:border-blue-400 active:scale-95 disabled:text-gray-500 disabled:border-gray-200">
+      <i class="fa-solid fa-angle-left"></i>
+    </button>
+
+    @for (page of visiblePages; track page) {
+      <button (click)="pageChanged.emit(page - 1)"
+              [disabled]="number() === (page - 1)"
+              [ngClass]="{'text-blue-500 font-medium' : number() === (page - 1)}"
+              class="flex justify-center items-center border-2 rounded w-6 h-8
+            hover:border-blue-400 active:scale-95 disabled:border-gray-200">
+        {{ page }}
+      </button>
+    }
+
+    <button (click)="pageChanged.emit(number() + 1)"
+            [disabled]="last()"
+            class="flex justify-center items-center border-2 rounded w-6 h-8
+          hover:border-blue-400 active:scale-95 disabled:text-gray-500 disabled:border-gray-200">
+      <i class="fa-solid fa-angle-right"></i>
+    </button>
+    <button (click)="pageChanged.emit(totalPages() - 1)"
+            [disabled]="last()"
+            class="flex justify-center items-center border-2 rounded w-6 h-8
+          hover:border-blue-400 active:scale-95 disabled:text-gray-500 disabled:border-gray-200">
+      <i class="fa-solid fa-angles-right"></i>
+    </button>
+  </div>
+</div>
+

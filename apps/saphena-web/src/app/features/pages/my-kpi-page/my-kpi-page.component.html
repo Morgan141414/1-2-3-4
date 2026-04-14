@@ -1,0 +1,48 @@
+<div class="mb-4 flex gap-2 items-center">
+  <span class="text-gray-500">от</span>
+  <input type="date"
+         [(ngModel)]="from"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+
+  <span class="text-gray-500">до</span>
+  <input type="date"
+         [(ngModel)]="to"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+</div>
+
+@if (kpi()?.events?.content) {
+  <div class="flex gap-4">
+    <div class="mb-4 font-medium uppercase">Общий доход за период: </div>
+    <div>{{ kpi()!.share | mask: 'separator' }} тг.</div>
+  </div>
+
+  <table class="mt-4 w-full">
+    <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">Пациент</td>
+    <td class="px-2 pb-2">Тип клиента</td>
+    <td class="px-2 pb-2">Процедура</td>
+    <td class="px-2 pb-2">Дата</td>
+    <td class="px-2 pb-2">Сумма</td>
+    </thead>
+    <tbody>
+      @for (e of kpi()!.events.content; track e) {
+        <tr class="border-b">
+          <td class="px-2 pb-2">{{ getFullname(e.patient?.firstName, e.patient?.lastName, e.patient?.middleName) }}</td>
+          <td class="px-2 pb-2">{{ e.clientOwnershipType }}</td>
+          <td class="px-2 pb-2">{{ e.procedureName }}</td>
+          <td class="px-2 pb-2">{{ e.occurredAt | date: 'dd.MM.yyyy' }}</td>
+          <td class="px-2 pb-2">{{ e.amount ?? 0 | mask: 'separator' }} тг.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (kpi()!.events.totalPages > 1) {
+    <app-pagination [totalPages]="kpi()!.events.totalPages"
+                    [number]="kpi()!.events.number"
+                    [last]="kpi()!.events.last"
+                    (pageChanged)="getKpi($event)" />
+  }
+}

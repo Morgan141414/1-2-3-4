@@ -1,0 +1,76 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">ФИО</td>
+    <td class="px-2 pb-2">ИИН</td>
+    <td class="px-2 pb-2">Тип документа</td>
+    <td class="px-2 pb-2">Номер документа</td>
+    <td class="px-2 pb-2">Адрес</td>
+    <td class="px-2 pb-2">Контакты</td>
+    @if (role !== userRoleType.ROLE_OPERATOR) {
+      <td class="px-2 pb-2"></td>
+    }
+  </thead>
+  <tbody>
+    @for (patient of patients(); track patient.id; let i = $index) {
+      <tr class="border-b hover:bg-gray-100">
+        <td class="px-2 py-2">
+          {{ getFullname(patient.firstName, patient.lastName, patient.middleName) }}
+        </td>
+        <td class="px-2 py-2">
+          {{ patient.iin || '-' }}
+        </td>
+        <td class="px-2 py-2">
+          @if (patient.documentType) {
+            {{ getPatientDocumentTypeName(patient.documentType) }}
+          } @else {
+            -
+          }
+        </td>
+        <td class="px-2 py-2">{{ patient.documentNumber || '-' }}</td>
+        <td class="px-2 py-2">
+          <div>{{ patient.city?.name }}</div>
+          <div>{{ patient.address }}</div>
+        </td>
+        <td class="px-2 py-2">
+          @if(patient.phone) {
+            +{{ patient.phone | mask: "0 (000) 000 00 00" }}
+          } @else {
+          -
+          }
+          @if (patient.email) {
+            <div class="text-sm text-gray-600">
+              {{ patient.email }}
+            </div>
+          }
+          @if (patient.emergencyContact) {
+            <div class="text-sm text-gray-600">
+              +{{ patient.emergencyContact | mask: "0 (000) 000 00 00" }}(Экстренный)
+            </div>
+          }
+        </td>
+        @if (role !== userRoleType.ROLE_OPERATOR) {
+          <td class="px-2 py-2">
+            <button [matMenuTriggerFor]="menu"
+                    (click)="$event.stopPropagation()"
+                    class="w-4 hover:text-blue-500">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item
+                      (click)="edit.emit(patient.id)">
+                <i class="fa-solid fa-pen mr-1 text-yellow-500"></i>
+                Редактировать
+              </button>
+              <button mat-menu-item
+                      (click)="openDeleteDialog(patient)">
+                <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+                Удалить
+              </button>
+            </mat-menu>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

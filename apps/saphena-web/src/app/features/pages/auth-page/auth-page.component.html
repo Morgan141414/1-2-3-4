@@ -1,0 +1,18 @@
+<div class="h-full flex justify-center items-center flex-col gap-6">
+  <div class="text-xl">QorMed</div>
+  @if (isSignedIn()) {
+    <app-sign-in />
+
+    <button class="text-sm text-blue-700"
+            (click)="isSignedIn.set(false)">
+      Регистрация пациента
+    </button>
+  } @else {
+    <app-patient-sign-up (registrationCompleted)="isSignedIn.set(true)" />
+
+    <button class="text-sm text-blue-700"
+            (click)="isSignedIn.set(true)">
+      Войти в систему
+    </button>
+  }
+</div>

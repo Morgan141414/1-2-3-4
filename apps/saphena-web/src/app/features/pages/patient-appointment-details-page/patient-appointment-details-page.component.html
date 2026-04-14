@@ -1,0 +1,88 @@
+@if (appointment().id && appointmentProcedures()) {
+  <app-appointment-details-header [id]="appointment().id"
+                                  [status]="appointment().status"
+                                  [datetime]="appointment().datetime" />
+
+  <app-tabs [tabs]="tabs"
+            [activeTab]="activeTab()"
+            (changed)="selectTab($event)"/>
+
+  <div class="pb-10">
+    @if (activeTab() === 'procedures') {
+      <div class="flex text-gray-500 mb-4 text-sm uppercase overflow-auto">
+        @for (ap of appointmentProcedures(); track ap.id) {
+          <div (click)="selectProcedure(ap)"
+               [ngClass]="{ 'text-blue-600 border-blue-600' : procedureTab().id === ap.id }"
+               class="pb-3 px-6 font-medium cursor-pointer border-b-2 hover:border-blue-400 hover:text-blue-400 text-nowrap">
+            {{ ap.procedure.name }}
+          </div>
+        }
+        <div class="pb-3 border-b-2 flex-auto"></div>
+      </div>
+
+      @if (protocolData()) {
+        <div class="flex gap-6">
+          <select [(ngModel)]="lang" class="py-1 px-2 border rounded-md outline-none cursor-pointer focus:border-blue-400">
+            <option value="ru">Рус</option>
+            <option value="kk">Қаз</option>
+            <option value="en">Eng</option>
+          </select>
+
+          <button (click)="downloadPdf()"
+                  [disabled]="loading()"
+                  class="bg-blue-500 px-4 py-1.5 text-white rounded-md hover:bg-blue-400 active:scale-95 disabled:opacity-60 disabled:pointer-events-none">
+            Распечатать
+          </button>
+        </div>
+
+        <app-protocol-data [protocolData]="protocolData()!" />
+      }
+      @else if (!loading()) {
+        <div class="mb-6">
+          Нет протокола услуги
+        </div>
+      }
+    }
+    @else if (activeTab() === 'documents') {
+      @if (appointmentSpecDocs().length < 1) {
+        <div class="mb-6">
+          Нет документов
+        </div>
+      } @else {
+        <div class="flex text-gray-500 mb-4 text-sm uppercase overflow-auto">
+          @for (specDoc of appointmentSpecDocs(); track specDoc.id) {
+            <div (click)="selectSpecDoc(specDoc)"
+                 [ngClass]="{ 'text-blue-600 border-blue-600' : specDocTab().id === specDoc.id }"
+                 class="pb-3 px-6 font-medium cursor-pointer border-b-2 hover:border-blue-400 hover:text-blue-400 text-nowrap">
+              {{ specDoc.name }}
+            </div>
+          }
+          <div class="pb-3 border-b-2 flex-auto"></div>
+        </div>
+
+        @if (protocolData()) {
+          <div class="flex gap-6">
+            <select [(ngModel)]="lang" class="py-1 px-2 border rounded-md outline-none cursor-pointer focus:border-blue-400">
+              <option value="ru">Рус</option>
+              <option value="kk">Қаз</option>
+              <option value="en">Eng</option>
+            </select>
+
+            <button (click)="downloadSpecDocument()"
+                    [disabled]="loading()"
+                    class="bg-blue-500 px-4 py-1.5 text-white rounded-md hover:bg-blue-400 active:scale-95 disabled:opacity-60 disabled:pointer-events-none">
+              Распечатать
+            </button>
+          </div>
+
+          <app-protocol-data [protocolData]="protocolData()!" />
+        }
+        @else if (!loading()) {
+          <div class="mb-6">
+            Нет протокола документа
+          </div>
+        }
+      }
+    }
+  </div>
+}

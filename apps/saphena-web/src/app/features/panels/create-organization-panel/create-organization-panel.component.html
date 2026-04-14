@@ -1,0 +1,24 @@
+  <form [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+        class="flex flex-col gap-4">
+    <app-bin-input-field [controlName]="form.controls.bin"
+                         (filled)="onBinFilled()" />
+    <app-input-field [controlName]="form.controls.clinicName"
+                     label="название клиники"
+                     placeholder="Saphena Clinic" />
+    <app-input-field [controlName]="form.controls.organizationName"
+                     label="название организации"
+                     placeholder='ТОО "ГИПЕРСТОУН"' />
+    <app-input-field [controlName]="form.controls.address"
+                     label="Адрес"
+                     placeholder="г. Астана, ул. Мангилик 2025" />
+    <app-phone-input-field [controlName]="form.controls.phone" />
+    <app-input-field [controlName]="form.controls.email"
+                     label="Email"
+                     placeholder="saphena.clinic@saphena.kz" />
+
+    <button [disabled]="form.disabled"
+            class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+      Добавить
+    </button>
+  </form>

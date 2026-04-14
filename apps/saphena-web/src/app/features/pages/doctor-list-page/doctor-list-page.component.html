@@ -1,0 +1,16 @@
+<div class="flex justify-end mb-6">
+  <button (click)="openAddDoctorPanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить доктора
+  </button>
+</div>
+
+<app-doctor-table [doctors]="doctorsPage().content"
+                  (deleted)="getDoctors()" />
+
+@if (doctorsPage()!.totalPages > 1) {
+  <app-pagination [totalPages]="doctorsPage()!.totalPages"
+                  [number]="doctorsPage()!.number"
+                  [last]="doctorsPage()!.last"
+                  (pageChanged)="getDoctors($event)" />
+}

@@ -1,0 +1,36 @@
+<div class="mb-4 flex gap-2 items-center">
+  <span class="text-gray-500">от</span>
+  <input type="date"
+         [(ngModel)]="from"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+
+  <span class="text-gray-500">до</span>
+  <input type="date"
+         [(ngModel)]="to"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+</div>
+
+@if (summary().length < 1) {
+  Нет данных
+} @else {
+  <table class="w-full">
+    <thead class="border-b uppercase text-sm text-gray-500">
+      <td class="px-2 pb-2">Логин</td>
+      <td class="px-2 pb-2">Кол-во созданных приемов</td>
+    </thead>
+    <tbody>
+      @for (kpi of summary(); track kpi.operatorId) {
+        <tr class="border-b">
+          <td class="px-2 py-2">
+            {{ kpi.operatorUsername }}
+          </td>
+          <td class="px-2 py-2">
+            {{ kpi.appointmentsCreated }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

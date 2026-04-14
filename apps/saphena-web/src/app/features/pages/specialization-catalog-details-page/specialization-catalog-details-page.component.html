@@ -1,0 +1,17 @@
+<div class="flex justify-end">
+  <button (click)="syncCatalog()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Обновить каталог
+  </button>
+</div>
+
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="selectTab($event)" />
+
+@if (activeTab() === 'procedures') {
+  <app-org-procedures-table [specializationId]="id()"/>
+}
+@else if (activeTab() === 'documents') {
+  <app-org-spec-docs-table [specializationId]="id()"/>
+}

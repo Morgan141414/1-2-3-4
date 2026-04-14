@@ -1,0 +1,48 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <div>
+    <div class="font-medium mb-1">
+      Пол
+    </div>
+    <label class="cursor-pointer mr-4">
+      <input type="radio"
+             [value]="genderType.MALE"
+             formControlName="gender">
+      Мужчина
+    </label>
+    <label class="cursor-pointer">
+      <input type="radio"
+             [value]="genderType.FEMALE"
+             formControlName="gender">
+      Женщина
+    </label>
+  </div>
+
+  <app-input-field [controlName]="form.controls.lastName"
+                   label="Фамилия"
+                   placeholder="Doe" />
+  <app-input-field [controlName]="form.controls.firstName"
+                   label="Имя"
+                   placeholder="John" />
+  <app-input-field [controlName]="form.controls.middleName"
+                   label="Отчество / Второе имя"
+                   placeholder="" />
+  <app-date-input-field [controlName]="form.controls.birthdate"
+                        label="Дата рождения" />
+  <app-kato-select-field [control]="form.controls.city" />
+  <app-input-field [controlName]="form.controls.address"
+                   label="Адрес"
+                   placeholder="" />
+  <app-phone-input-field [controlName]="form.controls.phone" />
+  <app-phone-input-field [controlName]="form.controls.emergencyContact"
+                         label="Экстренный контакт"/>
+  <app-input-field [controlName]="form.controls.email"
+                   label="Email"
+                   placeholder="patient@gmail.com" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Сохранить
+  </button>
+</form>

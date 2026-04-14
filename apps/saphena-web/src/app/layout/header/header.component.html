@@ -1,0 +1,32 @@
+<header class="w-full h-20 px-5 border-b border-gray-300 flex justify-between items-center">
+  <div class="text-2xl font-medium">{{ pageTitle() }}</div>
+
+  <div class="mr-10 flex gap-20">
+    @if (activeOrgId()) {
+      <div>
+        <div class="text-sm text-gray-500">Текущая организация</div>
+        @if (organizations().length > 1) {
+          <select [(ngModel)]="activeOrgId"
+                  (change)="changeActiveOrganization()"
+                  class="cursor-pointer">
+            @for (org of organizations(); track org.id) {
+              <option [value]="org.id">
+                {{ org.organizationName }}
+              </option>
+            }
+          </select>
+        }
+        @else if (organizations()[0]) {
+          <div>
+            {{ organizations()[0].organizationName }}
+          </div>
+        }
+      </div>
+    }
+
+    <div>
+      <div class="font-medium">{{ username() }}</div>
+      <div class="text-sm text-gray-500">{{ role() }}</div>
+    </div>
+  </div>
+</header>

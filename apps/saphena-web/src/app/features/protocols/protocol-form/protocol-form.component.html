@@ -1,0 +1,78 @@
+<form [formGroup]="form"
+      class="mt-6">
+  @for (section of protocol().sections; let sectionIndex = $index; track section) {
+    <div class="mb-8">
+      @if (section.title) {
+        <div class="pl-2 pb-0.5 mb-6 border-b font-medium text-lg">
+          {{ section.title }}
+        </div>
+      }
+      @for (field of section.fields; let fieldIndex = $index; track field) {
+        @if (field.type === protocolFieldType.DIAGNOSIS_MKB) {
+          <app-protocol-mkb10-input-field [field]="field"
+                                          [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex]" />
+        }
+        @else if (field.type === protocolFieldType.PROCEDURE_LIST) {
+          <app-protocol-provided-procedures-input-field
+            [field]="field"
+            [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex].controls.providedProcedures" />
+        }
+        @else if (field.type === protocolFieldType.ASSISTANT_SELECT) {
+          <app-protocol-assistant-select-field [field]="field"
+                                               [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex]" />
+        }
+        @else if (field.type === protocolFieldType.DOCTOR_SELECT) {
+          <app-protocol-doctor-select-field [field]="field"
+                                            [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex]" />
+        }
+        @else if (field.type === protocolFieldType.RANGE) {
+          <app-protocol-range-input-field [field]="field"
+                                          [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex]" />
+        }
+        @else if (field.type === protocolFieldType.CHECKBOX) {
+          <app-protocol-checkbox-field [field]="field"
+                                       [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex].controls.value" />
+        }
+        @else if (field.type === protocolFieldType.TEXTAREA) {
+          <app-protocol-textarea-field [field]="field"
+                                       [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex].controls.value"
+                                       [procedureId]="procedureId()" />
+        }
+        @else if (field.type === protocolFieldType.TABLE) {
+          <app-protocol-table-field [field]="field"
+                                    [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex]" />
+        }
+        @else {
+          <app-protocol-input-field [field]="field"
+                                    [control]="form.controls.data.controls[sectionIndex].controls.fields.controls[fieldIndex].controls.value"
+                                    [sectionIndex]="sectionIndex"
+                                    [fieldIndex]="fieldIndex"
+                                    class="flex-1" />
+        }
+      }
+    </div>
+  }
+
+  <div class="mt-6 flex items-end gap-12">
+    @if (assistants().length > 0) {
+      <div>
+        <div class="ml-2">Ассистент</div>
+        <select formControlName="doctorAssistantId"
+                class="min-w-72 mt-1 border py-1 px-2 rounded-md focus:outline-blue-400 cursor-pointer">
+          <option value=""></option>
+          @for (assistant of assistants(); track assistant.id) {
+            <option [value]="assistant.id">
+              {{ getFullname(assistant.firstName, assistant.lastName, assistant.middleName) }}
+            </option>
+          }
+        </select>
+      </div>
+    }
+
+    <button (click)="save()"
+            [disabled]="loading()"
+            class="mt-4 h-fit bg-blue-500 px-4 py-1.5 text-white rounded-md active:scale-95 disabled:opacity-60 disabled:pointer-events-none">
+      Сохранить
+    </button>
+  </div>
+</form>

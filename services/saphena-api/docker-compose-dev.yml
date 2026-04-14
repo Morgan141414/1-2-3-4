@@ -1,0 +1,124 @@
+services:
+  api-db:
+    container_name: saphena-api-db
+    image: postgres:16.8-alpine
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      TZ: 'Asia/Almaty'
+      PGTZ: 'Asia/Almaty'
+      POSTGRES_DB: saphena_api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${API_DB_PASSWORD}
+    volumes:
+      - ./data/api_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d saphena_api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - saphena-nw
+
+  keycloak:
+    container_name: saphena-keycloak
+    image: quay.io/keycloak/keycloak:26.5.2
+    restart: unless-stopped
+    environment:
+      KC_FEATURES: organization
+      KC_BOOTSTRAP_ADMIN_USERNAME:  ${KEYCLOAK_ADMIN_USERNAME:-test}
+      KC_BOOTSTRAP_ADMIN_PASSWORD:  ${KEYCLOAK_ADMIN_PASSWORD:-test}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://saphena-api-db:5432/keycloak_db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: ${API_DB_PASSWORD}
+      TZ: 'Asia/Almaty'
+      KC_PROXY: edge
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-dev.account.mis.qormed.kz}
+      KC_HOSTNAME_STRICT: false
+    command: ["start", "--http-enabled=true", "--proxy-headers=xforwarded", "--import-realm"]
+    ports:
+      - "8081:8080"
+    depends_on:
+      api-db:
+        condition: service_healthy
+    volumes:
+      - ./data/keycloak:/opt/keycloak/data
+    networks:
+      - saphena-nw
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: saphena-minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./data/minio_data:/data
+    command: server /data --console-address ":9001"
+
+
+  saphena-api:
+    container_name: saphena-api
+    image: ${SAPHENA_API_DOCKER_IMAGE}
+    restart: unless-stopped
+    environment:
+      API_DB_URL: 'jdbc:postgresql://saphena-api-db:5432/saphena_api'
+      API_DB_USERNAME: postgres
+      API_DB_PASSWORD: ${API_DB_PASSWORD}
+      API_JWT_SECRET: ${API_JWT_SECRET}
+      API_JWT_EXPIRATION_HR: 10
+      API_MAX_FILE_SIZE: '2MB'
+      API_MAX_REQUEST_SIZE: '4MB'
+      NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
+      KC_ADMIN_SERVER_URL: http://saphena-keycloak:8080
+      KC_ADMIN_CLIENT_SECRET: ${KC_ADMIN_CLIENT_SECRET}
+      OAUTH2_ISSUER_URI: http://saphena-keycloak:8080/realms/qormed
+    depends_on:
+      api-db:
+        condition: service_healthy
+    volumes:
+      - ./data/api_logs:/app/logs
+    networks:
+      - saphena-nw
+
+  saphena-web:
+    container_name: saphena-web
+    image: ${SAPHENA_WEB_DOCKER_IMAGE}
+    ports:
+      - "4200:80"
+    restart: unless-stopped
+    environment:
+      PRODUCTION: ${SAPHENA_WEB_PRODUCTION:-false}
+      KEYCLOAK_URL: ${SAPHENA_WEB_KEYCLOAK_URL:-https://dev.account.mis.qormed.kz}
+      KEYCLOAK_REALM: ${SAPHENA_WEB_KEYCLOAK_REALM:-qormed}
+      KEYCLOAK_CLIENT_ID: ${SAPHENA_WEB_KEYCLOAK_CLIENT_ID:-qormed-web}
+    networks:
+      - saphena-nw
+
+  saphena-notification-api:
+    container_name: saphena-notification-api
+    image: ${SAPHENA_NOTIFICATION_API_DOCKER_IMAGE}
+    restart: unless-stopped
+    volumes:
+      - ./data/mongodb_data:/data/db
+    networks:
+      - saphena-nw
+
+  saphena-whatsapp-bot:
+    container_name: saphena-whatsapp-bot
+    image: ${SAPHENA_WHATSAPP_BOT_DOCKER_IMAGE}
+    restart: unless-stopped
+    volumes:
+      - ./data/wwebjs_auth:/app/.wwebjs_auth
+    networks:
+      - saphena-nw
+
+networks:
+  saphena-nw:
+    driver: bridge

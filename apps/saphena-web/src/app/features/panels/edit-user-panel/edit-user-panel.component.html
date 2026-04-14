@@ -1,0 +1,23 @@
+<div class="flex flex-col mb-6">
+  <div>
+    <span class="font-medium">ID: </span>
+    <span class="text-gray-600">{{ user()?.id }}</span>
+  </div>
+  <div>
+    <span class="font-medium">Логин: </span>
+    <span class="text-gray-600">{{ user()?.username }}</span>
+  </div>
+</div>
+
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.password"
+                   label="новый пароль"
+                   placeholder="password" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Сохранить
+  </button>
+</form>

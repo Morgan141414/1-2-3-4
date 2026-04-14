@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <style>
+            @page {
+                size: A4 portrait;
+                @top-center {
+                    content: element(header);
+                }
+                @bottom-center {
+                    content: element(footer);
+                }
+                margin: 0 0 35mm;
+                padding-top: 213px;
+
+            }
+            * {
+                font-family: Roboto, Arial, sans-serif;
+            }
+
+            body {
+                font-size: 14px;
+                counter-reset: page 0;
+            }
+            .header {
+                position: running(header);
+                background-color: #f7f7f7;
+                color: black;
+                height: 200px;
+                border-bottom: 3px solid black;
+            }
+            .header__table {
+                height: 100%;
+                width: 100%;
+                border-spacing: 10px;
+                padding: 8mm 8mm 5mm;
+            }
+            .header__table__top {
+                width: 100%;
+                vertical-align: top;
+            }
+            .header__table__top__clinic-name {
+                font-size: 22px;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+            .header__table__top__organization {
+                width:33%;
+                font-size: 12px
+            }
+            .header__table__bottom {
+                height: 100%;
+                vertical-align: bottom;
+            }
+            .header__table__bottom__procedure-name {
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            .footer {
+                position: running(footer);
+                border-top: black 1px solid;
+                margin-right: 8mm;
+                margin-left: 8mm;
+            }
+            .footer__table {
+                width: 100%;
+                border-spacing: 4px 10px;
+            }
+            .footer #page-number::before {
+                counter-increment: page;
+                content: counter(page);
+                position: absolute;
+                right: 0;
+                bottom: 4px;
+                color: gray;
+            }
+            .title {
+                font-size: 18px;
+                text-align: left;
+                margin-bottom: 18px;
+            }
+
+            .price{
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .prices tr:nth-child(odd) {
+                background: #f3f3f3;
+            }
+            .maintext {
+                margin-right: 8mm;
+                margin-left: 8mm;
+                margin-bottom: 5mm;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="header">
+            <table class="header__table">
+                <tr class="header__table__top">
+                    <td class="header__table__top__clinic-name">
+                        <img th:if="${not #strings.isEmpty(organizationLogo)}"
+                             th:src="${organizationLogo}"
+                             style="width: auto; height: 60px;"
+                             alt="" />
+                        <div th:if="${#strings.isEmpty(organizationLogo)}"
+                             th:text="${organizationName}"
+                             style="font-size: 30px"></div>
+                    </td>
+                    <td class="header__table__top__organization">
+                        <div th:text="${organizationName}"></div>
+                        <div th:text="${address}"></div>
+                        <div th:text="${'+' + organizationPhone}"></div>
+                    </td>
+                </tr>
+                <tr class="header__table__bottom">
+                    <td class="header__table__bottom__procedure-name">
+                        <span th:if="${protocolLang == 'ru'}">Договор № </span>
+                        <span th:if="${protocolLang == 'kk'}">Шарт №</span>
+                        <span th:if="${protocolLang == 'en'}">Contract No.</span>
+                        <span th:text="${doc_number}" style="font-weight: bold"></span>
+                        <div th:if="${protocolLang == 'ru'}">об оказании платных медицинских услуг</div>
+                        <div th:if="${protocolLang == 'kk'}">ақылы медициналық қызметтер көрсету туралы</div>
+                        <div th:if="${protocolLang == 'en'}">on the provision of paid medical services</div>
+                        <div></div>
+                    </td>
+                    <td>
+                        <div style="margin-bottom: 4px">
+                            <span th:if="${protocolLang == 'ru'}">Дата</span>
+                            <span th:if="${protocolLang == 'kk'}">Күн</span>
+                            <span th:if="${protocolLang == 'en'}">Date</span>
+                        </div>
+                        <div th:text="${doc_date}"
+                             style="font-size: 12px"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <table class="footer__table">
+                <tr>
+                    <td style="width:50%; font-weight: bold;">
+                        <span th:if="${protocolLang == 'ru'}">Директор</span>
+                        <span th:if="${protocolLang == 'kk'}">Директор</span>
+                        <span th:if="${protocolLang == 'en'}">Director</span>
+                    </td>
+                    <td style="font-weight: bold">
+                        <span th:if="${protocolLang == 'ru'}">Пациент</span>
+                        <span th:if="${protocolLang == 'kk'}">Науқас</span>
+                        <span th:if="${protocolLang == 'en'}">Patient</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Касым. А.К.</td>
+                    <td th:text="${patientShortname}"></td>
+                </tr>
+            </table>
+            <div id="page-number"></div>
+        </div>
+
+        <div class="maintext">
+            <div style="margin-bottom: 20px">
+                <span th:if="${protocolLang == 'ru'}">ТОО ГИПЕРСТОУН, именуемое в дальнейшем «Клиника», имеющее лицензию № 4506578 от 14.09.2023 на осуществление медицинской деятельности, выданную МЗ РК в лице ТОО ГИПЕРСТОУН, действующего на основании договора, с одной стороны, и</span>
+                <span th:if="${protocolLang == 'kk'}">TOO HYPERSTONE, бұдан әрі «Клиника» холдингі, медициналық қызметті жүзеге асыруға 2023 жылғы 14 қыркүйектегі № 4506578 лицензиясы бар, келісім негізінде әрекет ететін TOO HYPERSTONE бір жағынан Қазақстан Республикасы Денсаулық сақтау министрлігімен берілген және</span>
+                <span th:if="${protocolLang == 'en'}">TOO GIPERSTONE, hereinafter referred to as the "Clinic", having license No. 4506578 dated 09/14/2023 for the implementation of medical activities, issued by the Ministry of Health of the Republic of Kazakhstan represented by TOO GIPERSTONE, acting on the basis of an agreement, on the one hand, and</span>
+                <span th:text="${patientFullname}"
+                      style="font-weight: bold"></span>
+                <span th:text="${patientIin}"
+                      style="font-weight: bold"></span>
+                <span th:if="${protocolLang == 'ru'}">именуемый (ая) в дальнейшем «Пациент», с другой стороны, совместно именуемые «Стороны», заключили настоящий договор (далее - Договор) о нижеследующем:</span>
+                <span th:if="${protocolLang == 'kk'}">бұдан әрі «Пациент» деп аталатын, екінші жағынан, «Тараптар» бірігіп осы шартты (бұдан әрі – Келісім) келесі түрде жасады:</span>
+                <span th:if="${protocolLang == 'en'}">hereinafter referred to as the "Patient", on the other hand, jointly referred to as the "Parties", have entered into this agreement (hereinafter referred to as the Agreement) as follows:</span>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">1. Предмет Договора</span>
+                    <span th:if="${protocolLang == 'kk'}">1. Шарттың мәні</span>
+                    <span th:if="${protocolLang == 'en'}">1. Subject of the Agreement</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">1.1. В соответствии с лицензией на осуществление медицинской деятельности, выданной МЗ РК, на основании медицинских показаний, а также желания Пациента, Клиника оказывает медицинские Услуги на платной основе, а Пациент оплачивает данные услуги (далее – Услуги).</span>
+                    <span th:if="${protocolLang == 'kk'}">1.1. Медициналық көрсеткіштерге, сондай-ақ Пациенттің тілектеріне байланысты Қазақстан Республикасы Денсаулық сақтау министрлігі берген медициналық қызметке лицензияға сәйкес Клиника ақылы негізде медициналық қызметтерді көрсетеді, ал Пациент бұл қызметтерді (бұдан әрі – Қызметтер) төлейді.</span>
+                    <span th:if="${protocolLang == 'en'}">1.1. In accordance with the license for medical activities issued by the Ministry of Health of the Republic of Kazakhstan, based on medical indications, as well as the wishes of the Patient, the Clinic provides medical Services on a paid basis, and the Patient pays for these services (hereinafter referred to as the Services).</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">1.2. Перечень Услуг, их стоимость и порядок оплаты предоставляемых в соответствии с настоящим договором указаны в Приложении №2 к настоящему Договору, являющимся его неотъемлемой частью.</span>
+                    <span th:if="${protocolLang == 'kk'}">1.2. Осы Шартқа сәйкес көзделген Қызметтер тізбесі, олардың құны және төлеу тәртібі оның ажырамас бөлігі болып табылатын осы Шарттың № 2 Қосымшасында көрсетілген.</span>
+                    <span th:if="${protocolLang == 'en'}">1.2. The list of Services, their cost and the payment procedure provided in accordance with this Agreement are specified in Appendix No. 2 to this Agreement, which is an integral part thereof.</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">1.3. Клиника оказывает Услугу Пациенту только по предварительной записи при оплате Пациентом 10% от общей стоимости Услуг. Далее Пациента ставят в очередь и назначают дату оказания Услуги.</span>
+                    <span th:if="${protocolLang == 'kk'}">1.3. Клиника Пациентке Қызмет көрсетудің жалпы құнының 10%-ын Пациент төлеген кезде жазылу арқылы ғана көрсетеді. Содан кейін Пациент кезекке қойылады және Қызметті көрсету күні белгіленеді.</span>
+                    <span th:if="${protocolLang == 'en'}">1.3. The Clinic provides the Service to the Patient only by appointment upon payment by the Patient of 10% of the total cost of the Services. The Patient is then put on a waiting list and a date is set for the provision of the Service.</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">1.4. Место проведения медицинских услуг – Республика Казахстан г. Астана, клиника «Saphena».</span>
+                    <span th:if="${protocolLang == 'kk'}">1.4. Медициналық қызмет көрсету орны – Қазақстан Республикасы, Астана қ., Saphena клиникасы.</span>
+                    <span th:if="${protocolLang == 'en'}">1.4. Place of provision of medical services – Republic of Kazakhstan, Astana, Saphena clinic.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">2. Сумма договора и порядок расчетов</span>
+                    <span th:if="${protocolLang == 'kk'}">2. Шарт сомасы және төлеу тәртібі</span>
+                    <span th:if="${protocolLang == 'en'}">2. Contract amount and payment procedure</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.1. Виды и стоимость оказываемых Услуг указаны в Прейскуранте, утвержденный Клиникой, и действующего на день оказания Услуг.</span>
+                    <span th:if="${protocolLang == 'kk'}">2.1. The types and cost of the Services provided are indicated in the Price List approved by the Clinic and valid on the day the Services are provided.</span>
+                    <span th:if="${protocolLang == 'en'}">2.1. Көрсетілетін қызметтердің түрлері мен құны Клиника бекіткен және Қызметтер көрсетілген күні жарамды Прайс-парақшада көрсетілген.</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.2. Стоимость Услуг и порядок расчетов указаны в Приложении №2 к настоящему договору.</span>
+                    <span th:if="${protocolLang == 'kk'}">2.2. Қызметтердің құны және төлеу тәртібі осы шарттың №2 қосымшасында көрсетілген.</span>
+                    <span th:if="${protocolLang == 'en'}">2.2. The cost of Services and the payment procedure are specified in Appendix No. 2 to this agreement.</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.3. При необходимости допускается корректировка суммы договора в процессе лечения с учетом фактически оказанного объема медицинской помощи. Корректированная или окончательная (не корректированная) суммы оформляются в виде акта выполненных работ.</span>
+                    <span th:if="${protocolLang == 'kk'}">2.3. Қажет болған жағдайда шарт сомасы көрсетілген медициналық көмектің нақты көлемін ескере отырып, емдеу процесінде түзетілуі мүмкін. Түзетілген немесе түпкілікті (түзетілмеген) сомалар жұмыстың аяқталғаны туралы акт түрінде ресімделеді.</span>
+                    <span th:if="${protocolLang == 'en'}">2.3. If necessary, the contract amount may be adjusted during the treatment process, taking into account the actual volume of medical care provided. The adjusted or final (non-adjusted) amounts are drawn up in the form of a certificate of completion of work.</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.4. Клиника выдает Пациенту документ (фискальный чек, приходно-кассовый ордер), подтверждающий прием наличных денег.</span>
+                    <span th:if="${protocolLang == 'kk'}">2.4. Клиника Науқасқа қолма-қол ақшаның түскенін растайтын құжатты (фискалдық чек, кассалық кіріс ордері) береді.</span>
+                    <span th:if="${protocolLang == 'en'}">2.4. The Clinic issues the Patient a document (fiscal receipt, cash receipt order) confirming the receipt of cash.</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.5. Возврат уплаченной суммы осуществляется в следующих случаях:</span>
+                    <span th:if="${protocolLang == 'kk'}">2.5. Төленген сома келесі жағдайларда қайтарылады:</span>
+                    <span th:if="${protocolLang == 'en'}">2.5. The amount paid is refunded in the following cases:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.5.1. досрочного прекращения курса лечения Клиника выплачивает Пациенту разницу между оплаченной суммой и фактической стоимостью оказанной медицинской помощи, за исключением случаев досрочной выписки ввиду нарушения больным установленного режима пребывания в стационаре;</span>
+                    <span th:if="${protocolLang == 'kk'}">2.5.1. емделу курсын мерзімінен бұрын тоқтату, пациенттің стационарда белгіленген болу режимін бұзуына байланысты мерзімінен бұрын босату жағдайларын қоспағанда, Клиника Пациентке төленген сома мен көрсетілген медициналық көмектің нақты құны арасындағы айырманы төлейді;</span>
+                    <span th:if="${protocolLang == 'en'}">2.5.1. early termination of the course of treatment, the Clinic pays the Patient the difference between the amount paid and the actual cost of the medical care provided, with the exception of cases of early discharge due to the patient's violation of the established regime of stay in the hospital;</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">2.5.2. дальнейшее проведение медицинской услуги (процедуры) Пациенту противопоказано.</span>
+                    <span th:if="${protocolLang == 'kk'}">2.5.2. одан әрі медициналық қызмет көрсету (процедура) Пациентке қарсы.</span>
+                    <span th:if="${protocolLang == 'en'}">2.5.2. further medical service (procedure) is contraindicated for the Patient.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">3. Права и обязанности Сторон</span>
+                    <span th:if="${protocolLang == 'kk'}">3. Тараптардың құқықтары мен міндеттері</span>
+                    <span th:if="${protocolLang == 'en'}">3. Rights and obligations of the Parties</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">3.1. Клиника обязуется:</span>
+                    <span th:if="${protocolLang == 'kk'}">3.1. Клиника міндеттенеді:</span>
+                    <span th:if="${protocolLang == 'en'}">3.1. The Clinic undertakes to:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        3.1.1. оказать Услугу Пациенту согласно настоящему Договору; <br></br>
+                        3.1.2. обеспечить оказание Услуги в соответствии с периодическими протоколами диагностики и лечения заболеваний, при отсутствии протоколов по медицинским показаниям в соответствии с общепринятыми подходами;<br></br>
+                        3.1.3. при оказании Услуг привлекать компетентный, высококвалифицированный медицинский персонал по профилю;<br></br>
+                        3.1.4. соблюдать нормативные правовые акты в сфере санитарно-эпидемиологического благополучия населения и гигиенических нормативов;<br></br>
+                        3.1.5. формировать здоровый образ жизни и здорового питания;<br></br>
+                        3.1.6. В отношении каждого Пациента вести требуемую медицинскую документацию;<br></br>
+                        3.1.7. предоставлять Заказчику счет, с указанием видов оказанных Услуг, в установленные сроки;<br></br>
+                        3.1.8. выполнять иные обязанности, предусмотренные законодательством Республики Казахстан и настоящим Договором.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        3.1.1. осы Шартқа сәйкес Пациентке Қызмет көрсетуге; <br></br>
+                        3.1.2. ауруларды диагностикалау мен емдеудің мерзімді хаттамаларына сәйкес, жалпы қабылданған тәсілдерге сәйкес медициналық көрсеткіштер бойынша хаттамалар болмаған жағдайда Қызметтің көрсетілуін қамтамасыз ету; <br></br>
+                        3.1.3. Қызметтерді көрсету кезінде бейіні бойынша құзыретті, жоғары білікті медициналық персоналды тартуға; <br></br>
+                        3.1.4. халықтың санитариялық-эпидемиологиялық салауаттылығы саласындағы нормативтік құқықтық актілерді және гигиеналық нормативтерді сақтауға; <br></br>
+                        3.1.5. салауатты өмір салтын және дұрыс тамақтануды қалыптастыру; <br></br>
+                        3.1.6. әрбір Пациент үшін қажетті медициналық құжаттаманы жүргізу; <br></br>
+                        3.1.7. белгіленген мерзімде Тапсырыс берушіге көрсетілген Қызметтердің түрлері көрсетілген шот-фактураны ұсыну; <br></br>
+                        3.1.8. Қазақстан Республикасының заңнамасында және осы Шартта көзделген өзге де міндеттерді орындау.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        3.1.1. provide the Service to the Patient in accordance with this Agreement; <br></br>
+                        3.1.2. ensure the provision of the Service in accordance with periodic protocols for the diagnosis and treatment of diseases, in the absence of protocols for medical indications in accordance with generally accepted approaches; <br></br>
+                        3.1.3. when providing Services, involve competent, highly qualified medical personnel in the profile; <br></br>
+                        3.1.4. comply with regulatory legal acts in the field of sanitary and epidemiological welfare of the population and hygienic standards; <br></br>
+                        3.1.5. form a healthy lifestyle and healthy nutrition; <br></br>
+                        3.1.6. maintain the required medical documentation for each Patient; <br></br>
+                        3.1.7. provide the Customer with an invoice indicating the types of Services rendered, within the established time frame; <br></br>
+                        3.1.8. perform other duties stipulated by the legislation of the Republic of Kazakhstan and this Agreement.<br></br>
+                    </span>
+                </div>
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">3.2. Клиника имеет право:</span>
+                    <span th:if="${protocolLang == 'kk'}">3.2. Клиниканың құқығы бар:</span>
+                    <span th:if="${protocolLang == 'en'}">3.2. The Clinic has the right:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        3.2.1. самостоятельно определять методы оказания Услуг Пациенту.<br></br>
+                        3.2.2. Получать от Пациента письменное информированное добровольное согласие на медицинское вмешательство;<br></br>
+                        3.2.3. требовать от Пациента выполнения всех предписаний, рекомендаций и условий, обеспечивающих своевременное, эффективное и качественное предоставление Услуги в процессе ее оказания и после завершения (режим, диета, ограничение нагрузок, ношение специального компрессионного бандажа (чулок) и т.д.);<br></br>
+                        3.2.4. отказаться от оказания Услуг в случае невнесения Пациентом предоплаты за оказываемые Услуги;<br></br>
+                        3.2.5. в случае выявления у Пациента непрофильных заболеваний (инфекция, венерические заболевания, туберкулез, психические и онкологические заболевания и т.д.) отказать в оказании медицинских услуг, расторгнуть настоящий Договор в одностороннем порядке. При этом Клиника возвращает денежные средства за вычетом суммы за фактические оказанные услуги и направляет Пациента в профильное медицинское учреждение;<br></br>
+                        3.2.6. на иные права, предусмотренные законодательством Республики Казахстан и настоящим Договором;<br></br>
+                        3.2.7. при необходимости произвести замену лечащего врача.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        3.2.1. Пациентке Қызмет көрсету әдістерін дербес анықтайды.<br></br>
+                        3.2.2. Пациенттен медициналық араласуға жазбаша хабардар етілген ерікті келісімін алу;<br></br>
+                        3.2.3. Пациенттен Қызметті көрсету кезінде және аяқталғаннан кейін (режим, диета, жүктемелерді шектеу, арнайы компрессорлық таңғышты (шұлық) кию және т.
+                        3.2.4. Пациент көрсетілген Қызметтер үшін алдын ала төлем жасамаған жағдайда Қызметтерді көрсетуден бас тарту;<br></br>
+                        3.2.5. Науқаста негізгі емес аурулар (инфекция, жыныстық жолмен берілетін аурулар, туберкулез, психикалық және онкологиялық аурулар және т.б.) анықталған жағдайда медициналық қызметтер көрсетуден бас тартуға және осы Шартты біржақты тәртіпте бұзуға. Бұл жағдайда Клиника нақты көрсетілген қызмет үшін соманы шегеріп, қаражатты қайтарады және Пациентті мамандандырылған медициналық мекемеге жібереді;<br></br>
+                        3.2.6. Қазақстан Республикасының заңнамасында және осы Шартта көзделген өзге де құқықтарға;<br></br>
+                        3.2.7. қажет болса, емдеуші дәрігерді ауыстырыңыз.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        3.2.1. independently determine the methods of providing Services to the Patient.<br></br>
+                        3.2.2. obtain from the Patient written informed voluntary consent for medical intervention;<br></br>
+                        3.2.3. require the Patient to comply with all instructions, recommendations and conditions that ensure the timely, effective and high-quality provision of the Service during its provision and after completion (regime, diet, limiting loads, wearing a special compression bandage (stockings), etc.);<br></br>
+                        3.2.4. refuse to provide Services if the Patient fails to make an advance payment for the Services provided;<br></br>
+                        3.2.5. refuse to provide medical services and unilaterally terminate this Agreement if the Patient is diagnosed with non-core diseases (infection, sexually transmitted diseases, tuberculosis, mental and oncological diseases, etc.). In this case, the Clinic returns the funds minus the amount for the actual services rendered and refers the Patient to a specialized medical institution;<br></br>
+                        3.2.6. to other rights provided for by the legislation of the Republic of Kazakhstan and this Agreement;<br></br>
+                        3.2.7. if necessary, replace the attending physician.<br></br>
+                    </span>
+                </div>
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">3.3. Пациент обязуется:</span>
+                    <span th:if="${protocolLang == 'kk'}">3.3. Науқас мыналарға міндеттенеді:</span>
+                    <span th:if="${protocolLang == 'en'}">3.3. The patient undertakes to:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        3.3.1. Своевременно оплачивать стоимость оказываемых Услуг;<br></br>
+                        3.3.2. Прибыть для получения Услуги в назначенное Клиникой время;<br></br>
+                        3.3.3. предоставить лечащему врачу информацию и документы, характеризующие его состояние, сообщить о перенесенных заболеваниях и о наличии аллергических реакций и противопоказаний, а также другую информацию необходимую для составления курса лечения и осуществления качественного оказания Услуг и предотвращения наступления вредных последствий для здоровья. Клиника освобождается от любой ответственности в случае непредставления информации или предоставления неверной, ложной информации Пациентом, связанной с оказанием ему медицинских услуг, а также другой информации, влияющей на оказание услуг;<br></br>
+                        3.3.4. проявлять в общении с медицинскими работниками Клиники уважение и такт;<br></br>
+                        3.3.5. сообщать лечащему врачу всю информацию, необходимую для постановки диагноза и лечения заболевания, после дачи согласия на медицинское вмешательство неукоснительно выполнять все предписания лечащего врача;<br></br>
+                        3.3.6. соблюдать правила внутреннего распорядка и бережно относиться к имуществу Клиники. В случае причинения вреда имуществу и оборудованию (медицинскому и немедицинскому) Клиники Пациент обязан возместить убытки в полном объеме;<br></br>
+                        3.3.7. сотрудничать с медицинским персоналом при получении оказываемых медицинских услуг;<br></br>
+                        3.3.8. своевременно информировать медицинских работников об изменении состояния своего здоровья в процессе диагностики и лечения, а также в случаях возникновения заболеваний, представляющих опасность для окружающих, либо подозрения на них;<br></br>
+                        3.3.9. выполнять требования врача, обеспечивающие качественное предоставление медицинских услуг, включая сообщение необходимых для этого сведений и предписаний;<br></br>
+                        3.3.10. не осуществлять самостоятельного лечения в период действия настоящего Договора, без консультации лечащего врача;<br></br>
+                        3.3.11. не совершать действий, нарушающих права других пациентов Клиники;<br></br>
+                        3.3.12. уведомить Клинику о своем согласии на обеспечении его всеми необходимыми эффективными лекарственными средствами, как включенными, так и не включенными в список жизненно-важных лекарственных средств.<br></br>
+                        3.3.13. Возместить материальный ущерб, в случае порчи им имущества Клиники.<br></br>
+                        3.3.14. выполнять иные обязанности, предусмотренные законодательством Республики Казахстан.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        3.3.1. Көрсетілген қызметтерді уақтылы төлеу;<br></br>
+                        3.3.2. Қызметті алуға клиника белгілеген уақытта келу;<br></br>
+                        3.3.3. Емдеуші дәрігерге оның жағдайын сипаттайтын ақпарат пен құжаттарды ұсыну, оның кез келген ауруы туралы, кез келген аллергиялық реакциялар мен қарсы көрсетілімдер туралы, сондай-ақ емдеу курсын дайындау және жоғары сапалы Қызмет көрсету және денсаулыққа зиянды салдардың алдын алу үшін қажетті басқа да ақпаратты хабарлау. Пациент оған медициналық қызмет көрсетуге қатысты ақпаратты ұсынбаған немесе дұрыс емес, жалған мәліметтерді, сондай-ақ қызмет көрсетуге әсер ететін басқа ақпаратты ұсынбаған жағдайда Клиника кез келген жауапкершіліктен босатылады;<br></br>
+                        3.3.4. Клиниканың медицина қызметкерлерімен қарым-қатынаста құрмет пен әдептілік таныту;<br></br>
+                        3.3.5. емдеуші дәрігерге ауруды диагностикалау және емдеу үшін қажетті барлық ақпаратты беруге, медициналық араласуға келісім бергеннен кейін емдеуші дәрігердің барлық нұсқауларын қатаң сақтауға;<br></br>
+                        3.3.6. ішкі тәртіп ережелерін сақтауға және Клиниканың мүлкіне ұқыпты қарауға. Клиниканың мүлкі мен жабдықтарына (медициналық және медициналық емес) зақым келген жағдайда Пациент келтірілген зиянды толық көлемде өтеуге міндетті;<br></br>
+                        3.3.7. көрсетілетін медициналық қызметтерді алу кезінде медицина қызметкерлерімен ынтымақтасуға;<br></br>
+                        3.3.8. диагностика және емдеу кезінде, сондай-ақ басқаларға қауіп төндіретін немесе оларға күдік тудыратын аурулар кезінде олардың денсаулығының өзгеруі туралы медициналық персоналға дереу хабарлауға;<br></br>
+                        3.3.9. медициналық қызметтерді сапалы көрсетуді қамтамасыз ететін дәрігердің талаптарын сақтауға, оның ішінде осыған қажетті ақпарат пен нұсқауларды беруге;<br></br>
+                        3.3.10. осы Келісімнің әрекет ету мерзімі ішінде емдеуші дәрігермен кеңеспей өзін-өзі емдеуді жүзеге асырмау;<br></br>
+                        3.3.11. Клиниканың басқа пациенттерінің құқықтарын бұзатын әрекеттерді жасамау;<br></br>
+                        3.3.12. Клиниканы өмірлік маңызы бар дәрілік заттардың тізіміне енгізілген және қосылмаған барлық қажетті тиімді препараттармен қамтамасыз етуге келісімі туралы хабарлауға.<br></br>
+                        3.3.13. Клиниканың мүлкі бүлінген жағдайда материалдық шығынды өтеу.<br></br>
+                        3.3.14. Қазақстан Республикасының заңнамасында көзделген өзге де міндеттерді орындау.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        3.3.1. Pay for the Services provided in a timely manner;<br></br>
+                        3.3.2. Arrive to receive the Service at the time appointed by the Clinic;<br></br>
+                        3.3.3. Provide the attending physician with information and documents characterizing his condition, report any illnesses he has had, any allergic reactions and contraindications, as well as other information necessary to prepare a course of treatment and provide high-quality Services and prevent harmful consequences for health. The Clinic is exempt from any liability in the event of failure to provide information or provision of incorrect, false information by the Patient related to the provision of medical services to him, as well as other information affecting the provision of services;<br></br>
+                        3.3.4. Show respect and tact in communication with the medical workers of the Clinic;<br></br>
+                        3.3.5. provide the attending physician with all the information necessary for diagnosis and treatment of the disease, after giving consent to medical intervention, strictly follow all the instructions of the attending physician;<br></br>
+                        3.3.6. comply with the internal regulations and treat the property of the Clinic with care. In the event of damage to the property and equipment (medical and non-medical) of the Clinic, the Patient is obliged to compensate for the damages in full;<br></br>
+                        3.3.7. cooperate with the medical staff when receiving the medical services provided;<br></br>
+                        3.3.8. promptly inform the medical staff about changes in their health during the diagnosis and treatment, as well as in cases of diseases that pose a danger to others, or are suspected of them;<br></br>
+                        3.3.9. comply with the doctor's requirements ensuring the high-quality provision of medical services, including the provision of the information and instructions necessary for this;<br></br>
+                        3.3.10. not to carry out self-treatment during the term of this Agreement, without consulting the attending physician;<br></br>
+                        3.3.11. not to commit actions that violate the rights of other patients of the Clinic;<br></br>
+                        3.3.12. notify the Clinic of his consent to provide him with all necessary effective drugs, both included and not included in the list of vital drugs.<br></br>
+                        3.3.13. Compensate for material damage in the event of damage to the property of the Clinic.<br></br>
+                        3.3.14. fulfill other obligations stipulated by the legislation of the Republic of Kazakhstan.<br></br>
+                    </span>
+                </div>
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">3.4. Пациент имеет право:</span>
+                    <span th:if="${protocolLang == 'kk'}">3.4. Науқастың құқығы бар:</span>
+                    <span th:if="${protocolLang == 'en'}">3.4. The patient has the right:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        3.4.1. на представление сведений об именах и о профессиональном статусе тех, кто будет оказывать ему медицинские услуги, а также о правилах внутреннего распорядка Клиники;<br></br>
+                        3.4.2. на получение информации о своих правах и обязанностях, оказываемых услугах, стоимости услуг, а также о порядке их предоставления;<br></br>
+                        3.4.3. на получение исчерпывающей информации о состоянии своего здоровья, включая данные о возможном риске и преимуществах предлагаемых и альтернативных методов лечения, сведений о возможных последствиях отказа от печения, информации о диагнозе, прогнозе и плане лечебных мероприятий в доступной для него форме, а также разъяснение причин выписки его домой или перевода в другую медицинскую организацию;<br></br>
+                        3.4.4. на достойное обращение в процессе диагностики и лечения, уважительное отношение к своим культурным и личностным ценностям;<br></br>
+                        3.4.5. на исчерпывающую информацию о назначаемых лекарственных средствах;<br></br>
+                        3.4.6. на информированное добровольное согласие на медицинское вмешательство. В случаях, когда состояние Пациента не позволяет ему выразить свою волю, а медицинское вмешательство неотложно, вопрос о его проведении в интересах Пациента решает консилиум, а при невозможности собрать консилиум – непосредственно лечащий врач;<br></br>
+                        3.4.7. полностью или частично отказаться от получения медицинских услуг. Отказ от медицинского вмешательства с указанием возможных последствий оформляется записью в медицинских документах и подписывается Пациентом либо его законным представителем и медицинским работником Клиники;<br></br>
+                        3.4.8. на иные права, предусмотренные законодательством Республики Казахстан.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        3.4.1. оған медициналық қызмет көрсететін тұлғалардың аты-жөні мен кәсіби мәртебесі туралы, сондай-ақ Емхананың ішкі тәртібі туралы ақпаратпен қамтамасыз етілсін;<br></br>
+                        3.4.2. өзінің құқықтары мен міндеттері, көрсетілетін қызметтер, қызметтердің құны, сондай-ақ оларды көрсету тәртібі туралы ақпарат алуға;<br></br>
+                        3.4.3. оның денсаулығы туралы жан-жақты ақпаратты, оның ішінде емдеудің ұсынылатын және баламалы әдістерінің ықтимал қауіптері мен пайдасы туралы мәліметтерді, емдеуден бас тартудың ықтимал салдары туралы ақпаратты, диагнозы, болжамы және емдеу шараларының жоспары туралы ақпаратты өзіне қолжетімді нысанда, сондай-ақ оны үйден шығару немесе басқа медициналық ұйымға ауыстыру себептерін түсіндіру;<br></br>
+                        3.4.4. диагностика және емдеу кезінде құрметпен қарауға, оның мәдени және жеке құндылықтарына құрметпен қарауға;<br></br>
+                        3.4.5. тағайындалған дәрілер туралы жан-жақты ақпарат алу;<br></br>
+                        3.4.6. медициналық араласуға ақпараттандырылған ерікті келісім. Пациенттің жағдайы оның еркін білдіруге мүмкіндік бермеген және медициналық араласу шұғыл болған жағдайларда оны Пациенттің мүддесі үшін жүзеге асыру мәселесін кеңес шешеді, ал кеңесті жинау мүмкін болмаған жағдайда – тікелей емдеуші дәрігер шешеді;<br></br>
+                        3.4.7. медициналық қызметтерді алудан толық немесе ішінара бас тартуға. Ықтимал салдарларды көрсете отырып, медициналық араласудан бас тарту медициналық құжаттарда ресімделеді және оған Пациент немесе оның заңды өкілі және Емхананың медициналық қызметкері қол қояды;<br></br>
+                        3.4.8. Қазақстан Республикасының заңнамасында көзделген өзге де құқықтарға.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        3.4.1. to be provided with information about the names and professional status of those who will provide him with medical services, as well as about the internal regulations of the Clinic;<br></br>
+                        3.4.2. to receive information about his rights and responsibilities, the services provided, the cost of services, as well as the procedure for their provision;<br></br>
+                        3.4.3. to receive comprehensive information about his health, including data on the possible risks and benefits of the proposed and alternative methods of treatment, information on the possible consequences of refusing treatment, information on the diagnosis, prognosis and plan of treatment measures in a form accessible to him, as well as an explanation of the reasons for his discharge home or transfer to another medical organization;<br></br>
+                        3.4.4. to be treated with dignity during diagnosis and treatment, respectful attitude towards his cultural and personal values;<br></br>
+                        3.4.5. to comprehensive information about the prescribed medications;<br></br>
+                        3.4.6. to informed voluntary consent to medical intervention. In cases where the Patient's condition does not allow him to express his will, and medical intervention is urgent, the issue of its implementation in the interests of the Patient is decided by a council, and if it is impossible to assemble a council - directly by the attending physician;<br></br>
+                        3.4.7. to fully or partially refuse to receive medical services. Refusal of medical intervention with an indication of the possible consequences is recorded in the medical documents and signed by the Patient or his legal representative and a medical worker of the Clinic;<br></br>
+                        3.4.8. to other rights provided for by the legislation of the Republic of Kazakhstan.<br></br>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">4. Ответственность сторон</span>
+                    <span th:if="${protocolLang == 'kk'}">4. Тараптардың жауапкершілігі</span>
+                    <span th:if="${protocolLang == 'en'}">4. Responsibility of the parties</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">4.1. Клиника несет ответственность за:</span>
+                    <span th:if="${protocolLang == 'kk'}">4.1. Клиника жауапты:</span>
+                    <span th:if="${protocolLang == 'en'}">4.1. The Clinic is responsible for:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        4.1.1. допущенные случаи нарушения по оказанию платных медицинских услуг (оказание Услуг ненадлежащего объема и качества, взимание двойной платы за оказание одной и той же медицинской услуги;)<br></br>
+                        4.1.2. своевременность и качество предоставляемых медицинских услуг Пациенту в соответствии с законодательством Республики Казахстан;<br></br>
+                        4.1.3. за несоблюдение требований, предъявляемых к методам диагностики, профилактики и лечения, разрешенных на территории Республики Казахстан;<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        4.1.1. ақылы медициналық қызметтерді көрсету (тиісті көлемде және сапада қызмет көрсету, бір медициналық қызметті көрсеткені үшін екі есе ақы алу;) бұзушылық жағдайларына жол берген.
+                        4.1.2. Қазақстан Республикасының заңнамасына сәйкес Пациентке көрсетілетін медициналық қызметтердің уақытылылығы мен сапасы;<br></br>
+                        4.1.3. Қазақстан Республикасының аумағында рұқсат етілген диагностикалық, профилактикалық және емдеу әдістеріне қойылатын талаптарды сақтамағаны үшін;<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        4.1.1. committed cases of violation in the provision of paid medical services (provision of Services of inadequate volume and quality, charging double for the provision of the same medical service;)<br></br>
+                        4.1.2. timeliness and quality of medical services provided to the Patient in accordance with the legislation of the Republic of Kazakhstan;<br></br>
+                        4.1.3. for failure to comply with the requirements for diagnostic, preventive and treatment methods permitted in the territory of the Republic of Kazakhstan;<br></br>
+                    </span>
+                </div>
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">4.2. Клиника не несет ответственности:</span>
+                    <span th:if="${protocolLang == 'kk'}">4.2. Клиника жауапты емес:</span>
+                    <span th:if="${protocolLang == 'en'}">4.2. The Clinic shall not be liable:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        4.2.1. в случае выявления у Пациента заболеваний, не указанных им, в результате не учтенных врачом Клиники при назначении лечения;<br></br>
+                        4.2.2. в случае нарушения Пациентом режима и невыполнения обязательных мероприятий, предписанных лечащим врачом Клиники;<br></br>
+                        4.2.3. в случае возникновения у Пациента аллергических реакций и индивидуальной непереносимости препаратов и материалов, разрешенных к применению;<br></br>
+                        4.2.4. в случае выявления или возникновения в период лечения или по его окончании изменений состояния организма, которые не связаны с оказанием Услуг по настоящему Договору, а связано непосредственно с действием медицинских препаратов на организм Пациента;<br></br>
+                        4.2.5. в случае если Пациент настаивает на конкретном методе медицинского лечения и соглашается принять ответственность на себя, что подтверждает подписью;<br></br>
+                        4.2.6. в случае ухудшения состояния здоровья Пациента, возникшего после оказания медицинской услуги, но не вследствие нее;<br></br>
+                        4.2.7. за качество лекарственных средств и изделий медицинского назначения, приобретенных Пациентом самостоятельно;<br></br>
+                        4.2.8. за качество оказываемых Пациенту услуг в другом медицинском учреждении при нахождении вне Клиники.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        4.2.1. егер Науқаста ол белгілемеген аурулар анықталса, соның салдарынан емхана дәрігері емдеуді тағайындау кезінде ескермеген;<br></br>
+                        4.2.2. Пациент режимді бұзса және емхананың емдеуші дәрігері тағайындаған міндетті шараларды орындамаса;<br></br>
+                        4.2.3. егер пациентте аллергиялық реакциялар және қолдануға рұқсат етілген препараттар мен материалдарға жеке төзбеушілік болса;<br></br>
+                        4.2.4. егер ағзаның жай-күйіндегі өзгерістер анықталса немесе емдеу кезінде немесе одан кейін осы Шарт бойынша Қызметтерді көрсетуге байланысты емес, бірақ медициналық препараттардың Пациент ағзасына әсерімен тікелей байланысты болса;<br></br>
+                        4.2.5. егер Пациент медициналық емдеудің нақты әдісін талап етсе және оның қолымен расталған жауапкершілікті қабылдауға келіссе;<br></br>
+                        4.2.6. Науқастың денсаулығының нашарлауы медициналық қызмет көрсетуден кейін пайда болған, бірақ оның салдарынан емес;<br></br>
+                        4.2.7. Пациент өз бетінше сатып алатын дәрілік заттар мен медициналық бұйымдардың сапасы үшін;<br></br>
+                        4.2.8. Пациентке клиникадан тыс уақытта басқа медициналық мекемеде көрсетілген қызметтердің сапасы үшін.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        4.2.1. if the Patient is diagnosed with diseases not specified by him, as a result of which the Clinic's doctor did not take into account when prescribing treatment;<br></br>
+                        4.2.2. if the Patient violates the regimen and fails to perform mandatory measures prescribed by the Clinic's attending physician;<br></br>
+                        4.2.3. if the Patient develops allergic reactions and individual intolerance to drugs and materials permitted for use;<br></br>
+                        4.2.4. if changes in the body's condition are detected or occur during or after treatment that are not related to the provision of Services under this Agreement, but are directly related to the effect of medical drugs on the Patient's body;<br></br>
+                        4.2.5. if the Patient insists on a specific method of medical treatment and agrees to accept responsibility, which is confirmed by his signature;<br></br>
+                        4.2.6. in the event of deterioration of the Patient's health that occurs after the provision of a medical service, but not as a result of it;<br></br>
+                        4.2.7. for the quality of medicines and medical products purchased by the Patient independently;<br></br>
+                        4.2.8. for the quality of services provided to the Patient in another medical institution while outside the Clinic.<br></br>
+                    </span>
+                </div>
+                <div style="font-weight: bold;">
+                    <span th:if="${protocolLang == 'ru'}">4.3. Пациент несет ответственность:</span>
+                    <span th:if="${protocolLang == 'kk'}">4.3. Науқас жауапты:</span>
+                    <span th:if="${protocolLang == 'en'}">4.3. The patient is responsible:</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        4.3.1. за несвоевременное возмещение затрат Клиники за фактически оказанный объем медицинской помощи в размере 0,01% от общей стоимости Услуг за каждый день просрочки;<br></br>
+                        4.3.2. причинение вреда имуществу и оборудованию (медицинскому и немедицинскому) Клиники.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        4.3.1. әрбір кешіктірілген күн үшін Қызметтердің жалпы құнының 0,01% мөлшерінде көрсетілген медициналық көмектің нақты көлемі үшін Клиниканың шығындарын уақтылы өтемегені үшін;<br></br>
+                        4.3.2. Клиниканың мүлкі мен жабдықтарына (медициналық және медициналық емес) зақым келтіру.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        4.3.1. for untimely reimbursement of the Clinic's expenses for the actual volume of medical care provided in the amount of 0.01% of the total cost of the Services for each day of delay;<br></br>
+                        4.3.2. causing damage to the property and equipment (medical and non-medical) of the Clinic.<br></br>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">5. Срок действия, изменение и расторжение договора</span>
+                    <span th:if="${protocolLang == 'kk'}">5. Шарттың ұзақтығы, өзгерту және бұзу</span>
+                    <span th:if="${protocolLang == 'en'}">5. Duration, modification and termination of the contract</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        5.1. Настоящий Договор вступает в силу с момента его подписания и действует до полного исполнения сторонами принятых на себя обязательств.<br></br>
+                        5.2. Настоящий Договор может быть досрочно расторгнут Клиникой в одностороннем порядке в случае:<br></br>
+                            1) несоблюдения пациентом Правил пребывания в Клинике;<br></br>
+                            2) наличия противопоказаний к пребыванию Пациента в Клинике;<br></br>
+                            3) при частичной или полной неоплате услуг в установленный Договором срок, а также в других случая, предусмотренных настоящим Договором;<br></br>
+                        5.3. Настоящий Договор может быть расторгнут Пациентом и (или) Клиникой в одностороннем порядке по письменному заявлению. При этом Пациент оплачивает Клинике фактически понесенные затраты и оказанные услуги.<br></br>
+                        5.4. Условия настоящего Договора могут быть изменены и дополнены по письменному соглашению сторон.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        5.1. Осы Келісім қол қойылған сәттен бастап күшіне енеді және тараптар өз міндеттемелерін толық орындағанға дейін әрекет етеді.<br></br>
+                        5.2. Осы Келісімді Клиника келесі жағдайларда біржақты тәртіппен мерзімінен бұрын бұзуы мүмкін:<br></br>
+                            1) емделушінің емханада болу ережелерін сақтамауы;<br></br>
+                            2) емделушінің емханада болуына қарсы көрсетілімдердің болуы;<br></br>
+                            3) Шартта белгіленген мерзімде қызметтерге ақы төлеу ішінара немесе толық орындалмаған жағдайда, сондай-ақ осы Шартта көзделген басқа жағдайларда;<br></br>
+                        5.3. Осы Шартты Пациент және (немесе) Клиника жазбаша өтініші бойынша біржақты тәртіпте бұзуы мүмкін. Бұл жағдайда Пациент Клиникаға нақты жұмсалған шығындар мен көрсетілген қызметтер үшін төлейді.<br></br>
+                        5.4. Осы Шарттың талаптары тараптардың жазбаша келісімі бойынша өзгертілуі және толықтырылуы мүмкін.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        5.1. This Agreement shall enter into force upon its signing and shall remain in effect until the parties have fully fulfilled their obligations.<br></br>
+                        5.2. This Agreement may be terminated early by the Clinic unilaterally in the event of:<br></br>
+                            1) the patient's failure to comply with the Rules of stay at the Clinic;<br></br>
+                            2) the presence of contraindications to the Patient's stay at the Clinic;<br></br>
+                            3) in case of partial or full failure to pay for services within the time period specified in the Agreement, as well as in other cases stipulated by this Agreement;<br></br>
+                        5.3. This Agreement may be terminated by the Patient and (or) the Clinic unilaterally upon written application. In this case, the Patient shall pay the Clinic for the actual costs incurred and services rendered.<br></br>
+                        5.4. The terms of this Agreement may be changed and supplemented by written agreement of the parties.<br></br>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">6. Форс – мажор</span>
+                    <span th:if="${protocolLang == 'kk'}">6. Форс-мажорлық жағдайлар</span>
+                    <span th:if="${protocolLang == 'en'}">6. Force majeure</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        6.1. Стороны не несут ответственность за неисполнение или ненадлежащее исполнение своих обязательств по Договору, если такое неисполнение или ненадлежащее исполнение будет являться следствием обстоятельств, таких, как пожар, стихийное бедствие, война и военные действия, блокада, забастовка, аварийные ситуации и другие чрезвычайные и непредотвратимые при данных условиях обстоятельства, независящие от воли Сторон, препятствующие им исполнить надлежащим образом обязательства.<br></br>
+                        6.2. Сторона, для которой в силу вышеуказанных причин, создалась невозможность выполнения своих обязательств, должна немедленно письменно известить другую сторону о наступлении таких обстоятельств и предполагаемом сроке их устранения.<br></br>
+                        6.3. В случае возникновения Форс-мажорных обстоятельств действие Договора приостанавливается до полного устранения данных обстоятельств.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        6.1. Тараптар Шарт бойынша өз міндеттемелерін орындамағаны немесе тиісінше орындамағаны үшін жауап бермейді, егер мұндай орындамау немесе тиісінше орындамау өрт, табиғи апат, соғыс және әскери іс-қимылдар, блокада, ереуіл, төтенше жағдайлар және басқа да төтенше және болмай қоймайтын мән-жайлар сияқты жағдайлардың салдары болса, берілген шарттарда олардың бақылауын тиісті түрде орындауға кедергі келтіреді. міндеттемелер.<br></br>
+                        6.2. Жоғарыда аталған себептерге байланысты өз міндеттемелерін орындау мүмкін болмаған Тарап екінші Тарапқа мұндай жағдайлардың туындағаны және оларды жоюдың күтілетін уақыты туралы жазбаша түрде дереу хабарлауға міндетті.<br></br>
+                        6.3. Форс-мажор жағдайлары туындаған жағдайда Шарт мұндай жағдайлар толығымен жойылғанға дейін тоқтатыла тұрады.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        6.1. The Parties shall not be liable for failure to perform or improper performance of their obligations under the Agreement, if such failure to perform or improper performance is a consequence of circumstances such as fire, natural disaster, war and military actions, blockade, strike, emergency situations and other extraordinary and unavoidable circumstances under the given conditions, beyond the control of the Parties, preventing them from properly fulfilling their obligations.<br></br>
+                        6.2. The Party for which, due to the above reasons, it has become impossible to fulfill its obligations, must immediately notify the other Party in writing of the occurrence of such circumstances and the expected time for their elimination.<br></br>
+                        6.3. In the event of Force Majeure circumstances, the Agreement shall be suspended until such circumstances are completely eliminated.<br></br>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">7. Конфиденциальность</span>
+                    <span th:if="${protocolLang == 'kk'}">7. Құпиялылық</span>
+                    <span th:if="${protocolLang == 'en'}">7. Confidentiality</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        7.1. Клиника обязуется хранить в тайне информацию о факте обращения Пациента за медицинской помощью, состоянии его здоровья, диагнозе его заболевания и иные сведения, полученные при его обследовании и лечении (врачебная тайна).<br></br>
+                        7.2. С согласия пациента допускается передача сведений, составляющих врачебную тайну другим лицам, в том числе должностным лицам по письменному заявлению, в интересах обследования и лечения Пациента.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        7.1. Клиника Пациенттің медициналық көмекке жүгінгені, оның денсаулық жағдайы, ауруының диагнозы туралы және оны тексеру мен емдеу кезінде алынған басқа да мәліметтерді (дәрігерлік құпиялылық) құпия сақтауға міндеттенеді.<br></br>
+                        7.2. Пациенттің келісімімен емделушіні тексеру және емдеу мүддесі үшін медициналық құпияны құрайтын ақпаратты басқа тұлғаларға, оның ішінде жазбаша сұрау салу бойынша лауазымды тұлғаларға беруге рұқсат етіледі.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        7.1. The Clinic undertakes to keep confidential information about the fact that the Patient has sought medical care, his state of health, the diagnosis of his disease and other information obtained during his examination and treatment (medical confidentiality).<br></br>
+                        7.2. With the consent of the Patient, it is permitted to transfer information constituting a medical confidentiality to other persons, including officials upon written request, in the interests of the examination and treatment of the Patient.<br></br>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">8. Заключительные положения</span>
+                    <span th:if="${protocolLang == 'kk'}">8. Қорытынды ережелер</span>
+                    <span th:if="${protocolLang == 'en'}">8. Final Provisions</span>
+                </h3>
+            </div>
+            <div style="margin-bottom: 20px">
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">
+                        8.1. Ни одна из сторон не имеет право передавать свои обязательства по настоящему Договору третьей стороне без письменного согласия другой стороны.<br></br>
+                        8.2. Настоящий Договор составлен на двух языках, в двух экземплярах, имеющих одинаковую юридическую силу по одному экземпляру для каждой из Сторон.<br></br>
+                        8.3. Все споры и претензии Стороны обязуются решать путем переговоров. В случае недостижения соглашения спор подлежит рассмотрению в судебных органах в соответствии с действующим законодательством Республики Казахстан.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        8.1. Ешбір тарап екінші тараптың жазбаша келісімінсіз осы Шарт бойынша өз міндеттемелерін үшінші тарапқа беруге құқығы жоқ.<br></br>
+                        8.2. Осы Келісім екі тілде, екі данада, әрқайсысының бірдей заңды күші бар, әрбір Тарап үшін бір данадан жасалған.<br></br>
+                        8.3. Тараптар барлық даулар мен талаптарды келіссөздер арқылы шешуге міндеттенеді. Келісімге қол жеткізілмеген жағдайда дау Қазақстан Республикасының қолданыстағы заңнамасына сәйкес әділет органдарында қаралады.<br></br>
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        8.1. Neither party has the right to transfer its obligations under this Agreement to a third party without the written consent of the other party.<br></br>
+                        8.2. This Agreement is drawn up in two languages, in two copies, each having equal legal force, one copy for each Party.<br></br>
+                        8.3. The Parties undertake to resolve all disputes and claims through negotiations. In case of failure to reach an agreement, the dispute shall be considered in the judicial authorities in accordance with the current legislation of the Republic of Kazakhstan.<br></br>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintext">
+            <div class="title">
+                <h3>
+                    <span th:if="${protocolLang == 'ru'}">9. Адреса и реквизиты Сторон:</span>
+                    <span th:if="${protocolLang == 'kk'}">9. Тараптардың мекенжайлары мен деректемелері:</span>
+                    <span th:if="${protocolLang == 'en'}">9. Addresses and details of the Parties:</span>
+                </h3>
+            </div>
+            <table style="width: 100%; border-collapse: collapse">
+                <thead style="width: 100%">
+                    <tr style="width: 100%">
+                        <td style="width: 50%; font-weight: bold; padding-right: 5px">
+                            <span th:if="${protocolLang == 'ru'}">Клиника</span>
+                            <span th:if="${protocolLang == 'kk'}">Клиника</span>
+                            <span th:if="${protocolLang == 'en'}">Clinic</span>
+                        </td>
+                        <td style="width: 50%; font-weight: bold; padding-left: 5px">
+                            <span th:if="${protocolLang == 'ru'}">Пациент</span>
+                            <span th:if="${protocolLang == 'kk'}">Науқас</span>
+                            <span th:if="${protocolLang == 'en'}">Patient</span>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="vertical-align: top">
+                        <td style="width: 50%; padding-right: 5px">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Компания: ТОО "ГИПЕРСТОУН"</span>
+                                <span th:if="${protocolLang == 'kk'}">Компания: ТОО "ГИПЕРСТОУН"</span>
+                                <span th:if="${protocolLang == 'en'}">Сompany: LLP "ГИПЕРСТОУН"</span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Адрес: Казахстан, Астана, улица Кенесары, дом 44, кв/офис 17</span>
+                                <span th:if="${protocolLang == 'kk'}">Мекен-жайы: Қазақстан, Астана қаласы, Кенесары көшесі, 44 үй, 17 пәтер/кеңсе</span>
+                                <span th:if="${protocolLang == 'en'}">Address: Kazakhstan, Astana, Kenesary street, house 44, apt./office 17</span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">БИН (ИИН): 180540002465</span>
+                                <span th:if="${protocolLang == 'kk'}">БСН (ЖСН): 180540002465</span>
+                                <span th:if="${protocolLang == 'en'}">BIN (IIN): 180540002465</span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Банк: АО "Kaspi Bank"</span>
+                                <span th:if="${protocolLang == 'kk'}">Банк: АҚ "Kaspi Bank"</span>
+                                <span th:if="${protocolLang == 'en'}">Банк: JSC "Kaspi Bank"</span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">КБе: 17</span>
+                                <span th:if="${protocolLang == 'kk'}">КБ: 17</span>
+                                <span th:if="${protocolLang == 'en'}">KB: 17</span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">БИК: CASPKZKA</span>
+                                <span th:if="${protocolLang == 'kk'}">БИК: CASPKZKA</span>
+                                <span th:if="${protocolLang == 'en'}">BIC: CASPKZKA</span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Номер счёта: KZ90722S000026594458</span>
+                                <span th:if="${protocolLang == 'kk'}">Шот нөмірі: KZ90722S000026594458</span>
+                                <span th:if="${protocolLang == 'en'}">Account number: KZ90722S000026594458</span>
+                            </div>
+                        </td>
+                        <td style="width: 50%; padding-left: 5px">
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">ФИО: </span>
+                                <span th:if="${protocolLang == 'kk'}">Толық аты-жөні: </span>
+                                <span th:if="${protocolLang == 'en'}">Full name: </span>
+                                <span th:text="${patientFullname}" style="font-weight: bold"></span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">Адрес: </span>
+                                <span th:if="${protocolLang == 'kk'}">Мекен-жайы: </span>
+                                <span th:if="${protocolLang == 'en'}">Address: </span>
+                                <span th:text="${patientAddress}" style="font-weight: bold"></span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">ИИН: </span>
+                                <span th:if="${protocolLang == 'kk'}">ЖСН: </span>
+                                <span th:if="${protocolLang == 'en'}">IIN: </span>
+                                <span th:text="${patientIin}" style="font-weight: bold"></span>
+                            </div>
+                            <div>
+                                <span th:if="${protocolLang == 'ru'}">номер для связи: </span>
+                                <span th:if="${protocolLang == 'kk'}">байланыс телефоны: </span>
+                                <span th:if="${protocolLang == 'en'}">contact number: </span>
+                                <span th:text="${'+' + patientPhone}" style="font-weight: bold"></span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; height: 40px; padding-right: 5px">
+                            <span style="font-size: 16px; font-weight: bold">Касым. А.К.</span>
+                        </td>
+                        <td style="width: 50%; font-size: 16px; padding-left: 5px">
+                            <span th:text="${patientShortname}" style="font-weight: bold"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="page-break-before: always;">
+            <div style="text-align: right; font-size: 12px">
+                <div style="font-weight: bold">
+                    <span th:if="${protocolLang == 'ru'}">Приложение  № 2</span>
+                    <span th:if="${protocolLang == 'kk'}">№ 2 қосымша</span>
+                    <span th:if="${protocolLang == 'en'}">Appendix No. 2</span>
+                </div>
+                <div>
+                    <span th:if="${protocolLang == 'ru'}">к Договору об оказании платных медицинских услуг</span>
+                    <span th:if="${protocolLang == 'kk'}">ақылы медициналық қызметтер көрсету туралы келісімге</span>
+                    <span th:if="${protocolLang == 'en'}">to the Agreement on the provision of paid medical services</span>
+                </div>
+                <div>
+                    № <span th:text="${doc_number}"></span>
+                    <span th:if="${protocolLang == 'ru'}">
+                        от <span th:text="${doc_date}"></span>
+                    </span>
+                    <span th:if="${protocolLang == 'kk'}">
+                        <span th:text="${doc_date}"></span> бастап
+                    </span>
+                    <span th:if="${protocolLang == 'en'}">
+                        from  <span th:text="${doc_date}"></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="maintext">
+                <div class="title">
+                    <h3>
+                        <span th:if="${protocolLang == 'ru'}">1. Перечень Услуг</span>
+                        <span th:if="${protocolLang == 'kk'}">1. Қызметтер тізімі</span>
+                        <span th:if="${protocolLang == 'en'}">1. List of Services</span>
+                    </h3>
+                </div>
+                <table class="price" >
+                    <thead style="width: 100%">
+                        <tr style="width: 100%; font-weight: bold;">
+                            <td style="padding:8px 0">№</td>
+                            <td style="padding:8px 0">
+                                <span th:if="${protocolLang == 'ru'}">Наименование услуги</span>
+                                <span th:if="${protocolLang == 'kk'}">Қызмет атауы</span>
+                                <span th:if="${protocolLang == 'en'}">Name of service</span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:if="${protocolLang == 'ru'}">Стоимость услуги</span>
+                                <span th:if="${protocolLang == 'kk'}">Қызмет құны</span>
+                                <span th:if="${protocolLang == 'en'}">Cost of service</span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:if="${protocolLang == 'ru'}">Количество услуг</span>
+                                <span th:if="${protocolLang == 'kk'}">Қызметтер саны</span>
+                                <span th:if="${protocolLang == 'en'}">Number of services</span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:if="${protocolLang == 'ru'}">Общая стоимость услуг</span>
+                                <span th:if="${protocolLang == 'kk'}">Қызметтердің жалпы құны</span>
+                                <span th:if="${protocolLang == 'en'}">Total cost of services</span>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody class="prices">
+                        <tr th:each="procedure, iterStat : ${provided_procedures}" style="vertical-align: top"
+                            th:if="${provided_procedures != null and #lists.size(provided_procedures) > 0}">
+                            <td style="padding:8px 0">
+                                <span th:text="${iterStat.count}"></span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:text="${procedure.name}" style="font-weight: bold"></span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:text="${procedure.cost}" style="font-weight: bold"></span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:text="${procedure.number}" style="font-weight: bold"></span>
+                            </td>
+                            <td style="padding:8px 0">
+                                <span th:text="${procedure.totalCost}" style="font-weight: bold"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="maintext">
+                <div class="title">
+                    <h3>
+                        <span th:if="${protocolLang == 'ru'}">2. Стоимость Услуг и порядок расчетов</span>
+                        <span th:if="${protocolLang == 'kk'}">2. Қызметтердің құны және төлеу тәртібі</span>
+                        <span th:if="${protocolLang == 'en'}">2. Cost of Services and payment procedure</span>
+                    </h3>
+                </div>
+                <div>
+                    <div>
+                        <span th:if="${protocolLang == 'ru'}">2.1. Общая стоимость Услуг по настоящему Приложению №2 составляет</span>
+                        <span th:if="${protocolLang == 'kk'}">2.1. Осы №2 Қосымшаға сәйкес Қызметтердің жалпы құны</span>
+                        <span th:if="${protocolLang == 'en'}">2.1. The total cost of the Services under this Appendix No. 2 is</span>
+                        <span th:text="${service_totalcost}" style="font-weight: bold"></span>
+                        <span th:if="${protocolLang == 'ru'}">тг.</span>
+                        <span th:if="${protocolLang == 'kk'}">тг.</span>
+                        <span th:if="${protocolLang == 'en'}">tg.</span>
+                    </div>
+                    <div>
+                        <span th:if="${protocolLang == 'ru'}">2.2. Оплата за Услуги Клиники Пациентом производится в наличной и безналичной форме.</span>
+                        <span th:if="${protocolLang == 'kk'}">2.2. Пациенттің Клиника қызметтеріне ақы төлеу қолма-қол және қолма-қол ақшасыз нысанда жүзеге асырылады.</span>
+                        <span th:if="${protocolLang == 'en'}">2.2. Payment for the Clinic’s Services by the Patient is made in cash and non-cash form.</span>
+                    </div>
+                    <div>
+                        <span th:if="${protocolLang == 'ru'}">2.3. В соответствии п.1.3 Договора об оказании платных услуг №</span>
+                        <span th:if="${protocolLang == 'kk'}">2.3. Ақылы қызметтерді көрсету туралы шарттың № 1.3 тармағына сәйкес.</span>
+                        <span th:if="${protocolLang == 'en'}">2.3. In accordance with clause 1.3 of the Agreement on the provision of paid services No.</span>
+                        <span th:text="${doc_number}" style="font-weight: bold"></span>
+                        <span th:if="${protocolLang == 'ru'}">
+                            от <span th:text="${doc_date}" style="font-weight: bold"></span>.
+                        </span>
+                        <span th:if="${protocolLang == 'kk'}">
+                            <span th:text="${doc_date}" style="font-weight: bold"></span> бастап.
+                        </span>
+                        <span th:if="${protocolLang == 'en'}">
+                            from <span th:text="${doc_date}" style="font-weight: bold"></span>.
+                        </span>
+                        <span th:if="${protocolLang == 'ru'}">Пациент оплачивает Клинике 10% от общей стоимости Услуг, что составляет</span>
+                        <span th:if="${protocolLang == 'kk'}">Пациент Клиникаға Қызметтердің жалпы құнының 10% төлейді, яғни</span>
+                        <span th:if="${protocolLang == 'en'}">The patient pays the Clinic 10% of the total cost of the Services, which is</span>
+                        <span th:if="${service_totalcost}" th:text="(${service_totalcost * 0.1})" style="font-weight: bold"></span>
+                        <span th:unless="${service_totalcost}">_______________</span>
+                        тг.
+                    </div>
+                    <div>
+                        2.4. <span th:if="${service_totalcost}" th:text="${service_totalcost * 0.9}" style="font-weight: bold"></span>
+                        <span th:unless="${service_totalcost}">_______________</span>
+                        <span th:if="${protocolLang == 'ru'}">тг, что составляет 90% от общей стоимости Услуг, Пациент оплачивает в условленный день.</span>
+                        <span th:if="${protocolLang == 'kk'}">тг, бұл Қызметтердің жалпы құнының 90%-ын құрайды, Пациент келісілген күні төлейді.</span>
+                        <span th:if="${protocolLang == 'en'}">tg, which is 90% of the total cost of the Services, the Patient pays on the agreed day.</span>
+                        <span th:text="${service_paydate}" style="font-weight: bold"></span>
+                    </div>
+                    <div>
+                        <span th:if="${protocolLang == 'ru'}">2.5. Настоящее Приложение №2 является неотъемлемой частью Договора №2 об оказании платных медицинских услуг от 2023.</span>
+                        <span th:if="${protocolLang == 'kk'}">2.5. Осы No 2 қосымша ақылы медициналық қызметтер көрсету туралы 2023 жылғы No 2 шарттың ажырамас бөлігі болып табылады.</span>
+                        <span th:if="${protocolLang == 'en'}">2.5. This Appendix No. 2 is an integral part of Agreement No. 2 on the provision of paid medical services dated 2023.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,12 @@
+<form (ngSubmit)="onSubmit()"
+      [formGroup]="form"
+      class="mt-4 flex flex-col gap-4">
+  <app-input-field label="Код"
+                   [controlName]="form.controls.code"/>
+  <app-input-field label="Название"
+                   [controlName]="form.controls.name"/>
+
+  <div class="flex justify-end gap-2 pt-4">
+    <button type="submit" class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">Создать</button>
+  </div>
+</form>

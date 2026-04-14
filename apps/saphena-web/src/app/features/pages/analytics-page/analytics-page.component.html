@@ -1,0 +1,13 @@
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="activeTab.set($event)" />
+
+@switch (activeTab()) {
+  @case ('traffic') {
+    <app-patient-traffic />
+  }
+  @case ('income-expense') {
+    <app-income-expense />
+  }
+}
+

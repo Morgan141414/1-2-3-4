@@ -1,0 +1,32 @@
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Dependency directories
+node_modules/
+.gradle/
+
+# Build output
+build/
+dist/
+out/
+out-tsc/
+tmp/
+
+# Runtime data
+logs/
+*.log
+data/
+.wwebjs_auth/
+.wwebjs_cache/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Local backup of embedded repository metadata
+.embedded-git-backups/

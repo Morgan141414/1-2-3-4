@@ -1,0 +1,39 @@
+<div class="flex justify-between mb-6">
+  <div>
+    <select [(ngModel)]="type"
+            (change)="getAssistants()"
+            class="w-full border py-1 px-2 rounded-md focus:outline-blue-400 cursor-pointer">
+      <option value="">
+        Все
+      </option>
+      <option [value]="assistantType.DOCTOR_ASSISTANT">
+        {{ getAssistantTypeName(assistantType.DOCTOR_ASSISTANT) }}
+      </option>
+      <option [value]="assistantType.NURSE">
+        {{ getAssistantTypeName(assistantType.NURSE) }}
+      </option>
+      <option [value]="assistantType.ANESTHETIST">
+        {{ getAssistantTypeName(assistantType.ANESTHETIST) }}
+      </option>
+      <option [value]="assistantType.NURSE_ASSISTANT">
+        {{ getAssistantTypeName(assistantType.NURSE_ASSISTANT) }}
+      </option>
+    </select>
+  </div>
+
+  <button (click)="openAddAssistantPanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить ассистента
+  </button>
+</div>
+
+<app-assistant-table [assistants]="assistantsPage().content"
+                     (edit)="openEditAssistantPanel($event)"
+                     (deleted)="getAssistants()" />
+
+@if (assistantsPage().totalPages > 1) {
+  <app-pagination [totalPages]="assistantsPage()!.totalPages"
+                  [number]="assistantsPage()!.number"
+                  [last]="assistantsPage()!.last"
+                  (pageChanged)="getAssistants($event)" />
+}

@@ -1,0 +1,14 @@
+<label class="saphena-input-field">
+  <div class="font-medium capitalize ml-1">
+    ИИН
+  </div>
+
+  <input [formControl]="controlName()"
+         inputmode="numeric"
+         pattern="[0-9]*"
+         placeholder="010101010101"
+         maxlength="12"
+         class="w-full border py-1 px-2 rounded-md focus:outline-blue-400"
+         (keydown.space)="$event.preventDefault()"
+         (input)="onInput()">
+</label>

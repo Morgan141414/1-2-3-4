@@ -1,0 +1,69 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">Название</td>
+  <td class="px-2 pb-2">Цвет</td>
+  <td class="px-2 pb-2">Кабинет обязателен</td>
+  <td class="px-2 pb-2">Кол-во кабинетов</td>
+  <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (op of orgProcedures(); track op.id) {
+      <tr class="border-b hover:bg-gray-100"
+          [ngClass]="{ 'bg-gray-50' : op.deleted}">
+        <td class="px-2 py-2"
+            [ngClass]="{ 'text-gray-500' : op.deleted}">
+          {{ op.procedure.name }}
+        </td>
+        <td class="px-2 py-2"
+            [ngClass]="{ 'text-green-500' : op.procedure.type === procedureType.GREEN,
+                         'text-yellow-500' : op.procedure.type === procedureType.YELLOW,
+                         'text-blue-500' : op.procedure.type === procedureType.BLUE,
+                         'opacity-60' : op.deleted }">
+          {{ op.procedure.type || '-' }}
+        </td>
+        <td class="px-2 py-2"
+            [ngClass]="{ 'opacity-60' : op.deleted}">
+          @if (op.roomRequired) {
+            <i class=" text-green-500 fa-solid fa-check"></i>
+          } @else {
+            <i class="text-red-500 fa-solid fa-xmark"></i>
+          }
+        </td>
+        <td class="px-2 pb-2"
+            [ngClass]="{ 'text-gray-500' : op.deleted}">
+          {{ op.roomIds?.length || 0 }}
+        </td>
+        <td class="px-2 py-2">
+          @if (op.deleted) {
+            <button class="hover:text-green-500 active:scale-95"
+                    (click)="openRestoreDialog(op)">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          } @else {
+            <button [matMenuTriggerFor]="menu"
+                    class="w-4 hover:text-blue-500 active:scale-95">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item
+                      (click)="openEditPanel(op.id)">
+                <i class="fa-solid fa-pencil mr-1 text-yellow-500"></i>
+                Редактировать
+              </button>
+              <button mat-menu-item
+                      (click)="openProtocolDialog(op.procedure)">
+                <i class="fa-solid fa-file-medical mr-1 text-blue-500"></i>
+                Протокол
+              </button>
+              <button mat-menu-item
+                      (click)="openDeleteDialog(op)">
+                <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+                Удалить
+              </button>
+            </mat-menu>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

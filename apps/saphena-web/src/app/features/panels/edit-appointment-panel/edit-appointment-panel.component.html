@@ -1,0 +1,63 @@
+@if (appointment().id) {
+  <app-appointment-details [appointment]="appointment()" />
+
+  <div class="mt-4 flex flex-col gap-2">
+    @switch (visibleForm()) {
+      @case (VisibleFormType.ATTACHMENT) {
+        <app-attachment-form [appointment]="appointment()"
+                             (attached)="onPatientAttached()"
+                             (hideForm)="visibleForm.set(null)" />
+      }
+      @case (VisibleFormType.PAYMENT) {
+        <app-payment-form [appointment]="appointment()"
+                          (paymentStatusUpdated)="onPaymentStatusUpdated()"
+                          (hideForm)="visibleForm.set(null)" />
+      }
+      @case (VisibleFormType.RESCHEDULE) {
+        <app-reschedule-form [appointment]="appointment()"
+                             (rescheduled)="onRescheduled()"
+                             (hideForm)="visibleForm.set(null)" />
+      }
+      @default {
+        @if (canAttachPatient) {
+          <button (click)="visibleForm.set(VisibleFormType.ATTACHMENT)"
+                  class="bg-yellow-600 p-2 text-white rounded-md hover:bg-yellow-500 active:scale-95">
+            Привязать пациента
+          </button>
+        }
+        @if (canVerifyPatient) {
+          <button (click)="verifyPatient()"
+                  class="bg-yellow-600 p-2 text-white rounded-md hover:bg-yellow-500 active:scale-95">
+            Подтвердить пациента
+          </button>
+        }
+        @if (canVerifyPatientPhone) {
+          <button (click)="verifyPatientPhone()"
+                  class="bg-yellow-600 p-2 text-white rounded-md hover:bg-yellow-500 active:scale-95">
+            Подтвердить номер телефона
+          </button>
+        }
+        @if (canPrintDocuments) {
+          <button [routerLink]="'/patients/' + appointment().patient.id + '/docs'"
+                  class="bg-green-600 p-2 text-white rounded-md hover:bg-green-500 active:scale-95">
+            Составить договор
+          </button>
+        }
+        <button (click)="visibleForm.set(VisibleFormType.PAYMENT)"
+                class="bg-sky-600 p-2 text-white rounded-md hover:bg-sky-500 active:scale-95">
+          Изменить статус оплаты
+        </button>
+        @if (canReschedule) {
+          <button (click)="visibleForm.set(VisibleFormType.RESCHEDULE)"
+                  class="mt-6 bg-blue-600 p-2 text-white rounded-md hover:bg-blue-500 active:scale-95">
+            Перенести запись
+          </button>
+          <button (click)="cancel()"
+                  class="bg-red-600 p-2 text-white rounded-md hover:bg-red-500 active:scale-95">
+            Отменить запись
+          </button>
+        }
+      }
+    }
+  </div>
+}

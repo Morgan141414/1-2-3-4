@@ -1,0 +1,18 @@
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="onTabChanged($event)" />
+
+@switch (activeTab()) {
+  @case ('info') {
+    <app-organization-info [id]="id()" />
+  }
+  @case ('ceo') {
+    <app-organization-ceo [id]="id()" />
+  }
+  @case ('admins') {
+    <app-organization-admins [id]="id()" />
+  }
+  @case ('accountants') {
+    <app-organization-accountants [id]="id()" />
+  }
+}

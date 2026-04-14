@@ -1,0 +1,57 @@
+<div class="flex justify-between mb-6">
+  <div class="flex gap-4 flex-wrap">
+    <div class="flex gap-4 items-center rounded-md overflow-hidden border px-2.5 focus-within:border-blue-400">
+      <i class="fa-solid fa-magnifying-glass text-blue-500"></i>
+      <input [(ngModel)]="search"
+             placeholder="Поиск по БИН или названию"
+             class="border-none outline-none py-1">
+    </div>
+
+    <button (click)="getVendors()"
+            class="py-2 text-sm font-medium text-white bg-blue-500 px-4 rounded-md hover:bg-blue-600 active:scale-95">
+      Поиск
+    </button>
+  </div>
+
+  <button (click)="openCreateVendorPanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить поставщика
+  </button>
+</div>
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">БИН / ИИН</td>
+  <td class="px-2 pb-2">Название</td>
+  <td class="px-2 pb-2">Контактное лицо</td>
+    @if (role === userRoleType.ROLE_CEO) {
+      <td class="px-2 pb-2"></td>
+    }
+  </thead>
+  <tbody>
+    @for (v of vendors().content; track v.id) {
+      <tr class="border-b cursor-pointer hover:bg-gray-100">
+        <td class="px-2 py-2">{{ v.bin }}</td>
+        <td class="px-2 py-2">{{ v.name ?? '-' }}</td>
+        <td class="px-2 py-2">
+          @if (v.contactPersonName) {
+            <div>{{ v.contactPersonName }}</div>
+          }
+          @if (v.contactPersonPhone) {
+            <div class="text-gray-500 text-sm">
+              {{ v.contactPersonPhone | mask: "+0 (000) 000 00 00" }}
+            </div>
+          }
+        </td>
+        @if (role === userRoleType.ROLE_CEO) {
+          <td class="px-2 py-2">
+            <button (click)="openEditDialog(v.id)">
+              <i class="fa-solid fa-pen mr-1 text-yellow-600"></i>
+            </button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>
+

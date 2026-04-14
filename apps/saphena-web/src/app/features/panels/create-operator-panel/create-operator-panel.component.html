@@ -1,0 +1,15 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.username"
+                   label="Логин"
+                   placeholder="saphena-operator" />
+  <app-input-field [controlName]="form.controls.password"
+                   label="Пароль"
+                   placeholder="saphena-password" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

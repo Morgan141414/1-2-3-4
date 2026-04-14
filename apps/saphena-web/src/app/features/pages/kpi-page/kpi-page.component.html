@@ -1,0 +1,18 @@
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="activeTab.set($event)" />
+
+@switch (activeTab()) {
+  @case ('doctor') {
+    <app-doctor-kpi />
+  }
+  @case ('med-staff') {
+    <app-med-staff-kpi />
+  }
+  @case ('operator') {
+    <app-operator-kpi />
+  }
+  @case ('receptionist') {
+    <app-reception-kpi />
+  }
+}

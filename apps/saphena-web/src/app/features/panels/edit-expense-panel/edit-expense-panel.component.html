@@ -1,0 +1,47 @@
+<div class="grid grid-cols-2 gap-4 ">
+  <div class="font-medium">Дата:</div>
+  <div>{{ expense()?.date | date: 'dd.MM.yyyy' }}</div>
+
+  <div class="font-medium">Сумма:</div>
+  <div>{{ expense()?.totalCost || 0 | mask : 'separator' }} тг.</div>
+
+  <div class="font-medium">Тип:</div>
+  <div>{{ expense()?.type }}</div>
+
+  <div class="font-medium">Поставщик:</div>
+  <div>
+    <div>{{ expense()?.vendorBin }}</div>
+    <div class="text-gray-500">{{ expense()?.vendorName }}</div>
+  </div>
+
+  <div class="font-medium">Контактное лицо:</div>
+  <div>
+    <div>{{ expense()?.contactPersonPhone || '' | mask: "+0 (000) 000 00 00" }}</div>
+    <div class="text-gray-500">{{ expense()?.contactPersonName }}</div>
+  </div>
+
+  <div class="font-medium">Комментарий:</div>
+  <div>{{ expense()?.comment }}</div>
+</div>
+
+@if (expense()?.expenseList!.length > 0) {
+  <table class="w-full mt-6">
+    <thead class="border-b uppercase text-sm text-gray-500">
+      <td class="px-1 pb-1">название</td>
+      <td class="px-1 pb-1">цена</td>
+      <td class="px-1 pb-1">кол-во</td>
+      <td class="px-1 pb-1">общ. сумма</td>
+    </thead>
+
+    <tbody>
+      @for (item of expense()?.expenseList; track item) {
+        <tr>
+          <td class="p-1">{{ item.name }}</td>
+          <td class="p-1">{{ item.cost | mask : 'separator' }} тг.</td>
+          <td class="p-1">{{ item.count }} шт.</td>
+          <td class="p-1">{{ item.sum | mask : 'separator' }} тг.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

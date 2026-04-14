@@ -1,0 +1,18 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.name"
+                   label="название"
+                   placeholder="Договор с пациентом" />
+  <app-input-field [controlName]="form.controls.nameKk"
+                   label="название (Қаз)"
+                   placeholder="Науқаспен келісім" />
+  <app-input-field [controlName]="form.controls.nameEn"
+                   label="название (Eng)"
+                   placeholder="Agreement with the patient" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

@@ -1,0 +1,23 @@
+<div class="p-4 flex flex-col items-center gap-4">
+  @if (logoUrl()) {
+    <img [src]="logoUrl()"
+         alt="Organization logo"
+         class="p-4 object-contain border rounded-xl shadow" />
+
+    <button (click)="delete()"
+            class="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-400 active:scale-95">
+      Удалить логотип
+    </button>
+  } @else {
+    <input type="file"
+           accept="image/*"
+           (change)="onFileSelected($event)"
+           class="hidden"
+           #fileInput />
+
+    <button (click)="fileInput.click()"
+            class="px-2 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-400 active:scale-95">
+      Загрузить логотип
+    </button>
+  }
+</div>

@@ -1,0 +1,84 @@
+<div class="mb-4 flex gap-2 items-center">
+  <span class="text-gray-500">от</span>
+  <input type="date"
+         [(ngModel)]="from"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+
+  <span class="text-gray-500">до</span>
+  <input type="date"
+         [(ngModel)]="to"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+</div>
+
+@if (summary().length < 1) {
+  Нет данных
+} @else {
+  <table class="w-full">
+    <thead class="border-b uppercase text-sm text-gray-500">
+      <td class="px-2 pb-2">ФИО</td>
+      <td class="px-2 pb-2">Общий доход</td>
+      <td class="px-2 pb-2">Доля клиники</td>
+      <td class="px-2 pb-2">Доля врача</td>
+      <td class="px-2 pb-2"></td>
+    </thead>
+    <tbody>
+      @for (kpi of summary(); track kpi.doctorId) {
+        <tr class="border-b">
+          <td class="px-2 py-2">
+            {{ kpi.doctorFullname }}
+          </td>
+          <td class="px-2 py-2">
+            {{ kpi.totalRevenue | mask: 'separator' }} тг.
+          </td>
+          <td class="px-2 py-2">
+            {{ kpi.clinicShare | mask: 'separator' }} тг.
+          </td>
+          <td class="px-2 py-2">
+            {{ kpi.doctorShare | mask: 'separator' }} тг.
+          </td>
+          <td>
+            <button (click)="showDetails(kpi)"
+                    class="text-blue-400 font-medium hover:text-blue-500 active:scale-95">
+              подробнее
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (selectedDoctorId() != '' && kpiEventsPage()?.content) {
+    <div class="mt-6 font-medium uppercase">Приемы</div>
+    <table class="mt-4 w-full">
+      <thead class="border-b uppercase text-sm text-gray-500">
+        <td class="px-2 pb-2">Доктор</td>
+        <td class="px-2 pb-2">Пациент</td>
+        <td class="px-2 pb-2">Тип клиента</td>
+        <td class="px-2 pb-2">Процедура</td>
+        <td class="px-2 pb-2">Дата</td>
+        <td class="px-2 pb-2">Сумма</td>
+      </thead>
+      <tbody>
+        @for (e of kpiEventsPage()!.content; track e) {
+          <tr class="border-b">
+            <td class="px-2 py-2">{{ selectedDoctorFullname() }}</td>
+            <td class="px-2 pb-2">{{ getFullname(e.patient?.firstName, e.patient?.lastName, e.patient?.middleName) }}</td>
+            <td class="px-2 pb-2">{{ e.clientOwnershipType }}</td>
+            <td class="px-2 pb-2">{{ e.procedureName }}</td>
+            <td class="px-2 pb-2">{{ e.occurredAt | date: 'dd.MM.yyyy' }}</td>
+            <td class="px-2 pb-2">{{ e.amount ?? 0 | mask: 'separator' }} тг.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (kpiEventsPage()!.totalPages > 1) {
+      <app-pagination [totalPages]="kpiEventsPage()!.totalPages"
+                      [number]="kpiEventsPage()!.number"
+                      [last]="kpiEventsPage()!.last"
+                      (pageChanged)="getKpiEvents($event)" />
+    }
+  }
+}

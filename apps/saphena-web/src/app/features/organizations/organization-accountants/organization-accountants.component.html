@@ -1,0 +1,30 @@
+<div class="flex justify-end mb-6">
+  <button (click)="openCreateAccountantPanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить бухгалтера
+  </button>
+</div>
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">ID</td>
+  <td class="px-2 pb-2">Логин</td>
+  <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (accountant of accountants(); track accountant.id) {
+      <tr class="border-b">
+        <td class="px-2 py-2">{{ accountant.id }}</td>
+        <td class="px-2 py-2">{{ accountant.user.username }}</td>
+        <td class="px-2 py-2 flex gap-4">
+          <button (click)="openEditUserPanel(accountant.user.id)">
+            <i class="fa-solid fa-pen mr-1 text-yellow-500"></i>
+          </button>
+          <button (click)="openDeleteDialog(accountant)">
+            <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+          </button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -1,0 +1,25 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <div class="mt-4 text-gray-500 uppercase text-sm">
+    Личная информация
+  </div>
+  <app-input-field [controlName]="form.controls.lastName"
+                   label="Фамилия"
+                   placeholder="Doe" />
+  <app-input-field [controlName]="form.controls.firstName"
+                   label="Имя"
+                   placeholder="John" />
+  <app-input-field [controlName]="form.controls.middleName"
+                   label="Отчество / Второе имя"
+                   placeholder="" />
+  <app-phone-input-field [controlName]="form.controls.phone" />
+  <app-input-field [controlName]="form.controls.email"
+                   label="Email"
+                   placeholder="Doe" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Сохранить
+  </button>
+</form>

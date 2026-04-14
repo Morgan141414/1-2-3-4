@@ -1,0 +1,77 @@
+<div class="mb-4 flex gap-2 items-center">
+  <span class="text-gray-500">от</span>
+  <input type="date"
+         [(ngModel)]="from"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+
+  <span class="text-gray-500">до</span>
+  <input type="date"
+         [(ngModel)]="to"
+         (change)="getKpi()"
+         class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+</div>
+
+@if (summary().length < 1) {
+  Нет данных
+} @else {
+  <table class="w-full">
+    <thead class="border-b uppercase text-sm text-gray-500">
+      <td class="px-2 pb-2">ФИО</td>
+      <td class="px-2 pb-2">Участие в приемах</td>
+      <td class="px-2 pb-2"></td>
+    </thead>
+    <tbody>
+      @for (kpi of summary(); track kpi.assistantId) {
+        <tr class="border-b">
+          <td class="px-2 py-2">
+            {{ kpi.assistantFullname }}
+          </td>
+          <td class="px-2 py-2">
+            @for (p of kpi.participations; track p) {
+              <div class="flex gap-4 items-center">
+                <span class="text-sm uppercase">{{ getAssistantTypeName(p.assistantType) }}:</span>
+                <span>{{ p.count }}</span>
+              </div>
+            }
+          </td>
+          <td>
+            <button (click)="showDetails(kpi)"
+                    class="text-blue-400 font-medium hover:text-blue-500 active:scale-95">
+              подробнее
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  @if (selectedAssistantId() != '' && kpiEventsPage()?.content) {
+    <div class="mt-6 font-medium uppercase">Приемы</div>
+    <table class="mt-4 w-full">
+      <thead class="border-b uppercase text-sm text-gray-500">
+        <td class="px-2 pb-2">Ассистент</td>
+        <td class="px-2 pb-2">Пациент</td>
+        <td class="px-2 pb-2">Тип</td>
+        <td class="px-2 pb-2">Дата</td>
+      </thead>
+      <tbody>
+        @for (e of kpiEventsPage()!.content; track e) {
+          <tr class="border-b">
+            <td class="px-2 py-2">{{ selectedAssistantFullname() }}</td>
+            <td class="px-2 pb-2">{{ getFullname(e.patient?.firstName, e.patient?.lastName, e.patient?.middleName) }}</td>
+            <td class="px-2 pb-2">{{ getAssistantTypeName(e.assistantType) }}</td>
+            <td class="px-2 pb-2">{{ e.occurredAt | date: 'dd.MM.yyyy' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (kpiEventsPage()!.totalPages > 1) {
+      <app-pagination [totalPages]="kpiEventsPage()!.totalPages"
+                      [number]="kpiEventsPage()!.number"
+                      [last]="kpiEventsPage()!.last"
+                      (pageChanged)="getKpiEvents($event)" />
+    }
+  }
+}

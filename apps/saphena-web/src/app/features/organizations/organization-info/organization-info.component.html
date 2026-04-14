@@ -1,0 +1,32 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4 mb-6">
+  <div class="font-medium ml-1">
+    ID: {{ id() }}
+  </div>
+
+  <app-bin-input-field [controlName]="form.controls.bin"
+                       (filled)="onBinFilled()" />
+  <app-input-field [controlName]="form.controls.clinicName"
+                   label="Название клиники" />
+  <app-input-field [controlName]="form.controls.organizationName"
+                   label="Название организации" />
+  <app-input-field [controlName]="form.controls.address"
+                   label="Адрес" />
+  <app-phone-input-field [controlName]="form.controls.phone" />
+  <app-input-field [controlName]="form.controls.email"
+                   label="Email" />
+
+  @if (form.enabled) {
+    <button class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+      Сохранить
+    </button>
+  }
+</form>
+
+@if (form.disabled) {
+  <button (click)="form.enable()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Редактировать
+  </button>
+}

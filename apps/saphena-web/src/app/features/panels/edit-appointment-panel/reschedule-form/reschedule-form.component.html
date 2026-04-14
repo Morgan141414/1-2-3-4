@@ -1,0 +1,19 @@
+<div class="flex flex-col gap-2">
+  <app-date-time-input-field label="Начало"
+                             [controlName]="rescheduleForm.controls.start"
+                             (changed)="setEndDateTime()" />
+
+  <app-date-time-input-field label="Конец"
+                             [controlName]="rescheduleForm.controls.end" />
+
+  <button [disabled]="rescheduleForm.disabled"
+          (click)="reschedule()"
+          class="mt-4 bg-green-600 p-2 text-white rounded-md disabled:opacity-60 active:scale-95">
+    Изменить
+  </button>
+  <button [disabled]="rescheduleForm.disabled"
+          (click)="hideForm.emit()"
+          class="bg-gray-500 p-2 text-white rounded-md disabled:opacity-60 active:scale-95">
+    Отмена
+  </button>
+</div>

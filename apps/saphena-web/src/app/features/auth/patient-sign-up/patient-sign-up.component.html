@@ -1,0 +1,31 @@
+<div class="flex flex-col justify-between gap-4">
+  @if (step() === 1) {
+    <app-iin-input-field [controlName]="iin" />
+
+    <button class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
+            [disabled]="iin.invalid || loading()"
+            (click)="sendRegistrationCode()">
+      Получить код
+    </button>
+  } @else if (step() === 2) {
+    <app-otp-input [disabled]="loading()"
+                   label="Введите код из смс"
+                   (codeChange)="onCodeChange($event)"/>
+
+    <app-input-field label="Придумайте пароль"
+                     [controlName]="form.controls.password"
+                     placeholder="xvb!432fbSA" />
+
+    <button class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
+            [disabled]="form.invalid || loading()"
+            (click)="completeRegistration()">
+      Зарегистрироваться
+    </button>
+  }
+
+  @if (error()) {
+    <div class="w-48 m-auto text-sm text-red-700">
+      {{ error() }}
+    </div>
+  }
+</div>

@@ -1,0 +1,55 @@
+@if (field().title.trim()) {
+  <div>
+    {{ field().title }}
+  </div>
+}
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500 mb-2">
+  <td class="px-2 pb-2">Наименование услуги</td>
+  <td class="px-2 pb-2">Стоимость услуги</td>
+  <td class="px-2 pb-2">Количество услуг</td>
+  <td class="px-2 pb-2">Общая стоимость услуги</td>
+  <td></td>
+  </thead>
+  <tbody>
+    @for (procedure of control().value; let procedureIndex = $index; track procedure) {
+      <tr>
+        <td class="px-2 py-2">
+          <input class="border rounded-md p-1.5 py-0.5"
+                 [(ngModel)]="procedure.name">
+        </td>
+        <td class="px-2 py-2">
+          <input class="border rounded-md p-1.5 py-0.5"
+                 type="number"
+                 [(ngModel)]="procedure.cost"
+                 (change)="procedure.totalCost = procedure.cost * procedure.number">
+        </td>
+        <td class="px-2 py-2">
+          <input class="border rounded-md p-1.5 py-0.5"
+                 type="number"
+                 [(ngModel)]="procedure.number"
+                 (change)="procedure.totalCost = procedure.cost * procedure.number">
+        </td>
+        <td class="px-2 py-2">
+          <input class="border rounded-md p-1.5 py-0.5"
+                 type="number"
+                 disabled
+                 [(ngModel)]="procedure.totalCost">
+        </td>
+        <td>
+          <button (click)="removeProcedure(procedureIndex)" class="hover:text-red-500">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<div class="mt-2 mb-6 text-center">
+  <button (click)="addProcedure()"
+          class="text-sm text-blue-500 font-medium">
+    добавить
+  </button>
+</div>

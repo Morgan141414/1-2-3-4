@@ -1,0 +1,24 @@
+<div class="flex justify-end">
+  <button (click)="openAddSpecializationPanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Выбрать из каталога
+  </button>
+</div>
+
+@if (specializations().length > 0) {
+  <table class="w-full">
+    <thead class="border-b uppercase text-sm text-gray-500">
+      <td class="px-2 pb-2">Название</td>
+    </thead>
+    <tbody>
+      @for (spec of specializations(); track spec.id) {
+        <tr class="border-b hover:bg-gray-100 focus:bg-blue-100">
+          <td class="px-2 py-2 cursor-pointer"
+              [routerLink]="'/specialization-catalog/' + spec.id">
+            {{ spec.name }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

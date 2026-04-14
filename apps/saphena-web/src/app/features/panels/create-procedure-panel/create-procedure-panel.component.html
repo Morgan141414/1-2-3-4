@@ -1,0 +1,57 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.name"
+                   label="название"
+                   placeholder="Первичный прием" />
+  <app-input-field [controlName]="form.controls.nameKk"
+                   label="название (Қаз)"
+                   placeholder="Кеңес беру" />
+  <app-input-field [controlName]="form.controls.nameEn"
+                   label="название (Eng)"
+                   placeholder="Consultation" />
+  <app-input-field [controlName]="form.controls.key"
+                   label="код"
+                   placeholder="CONSULTATION" />
+  <app-procedure-type-select [controlName]="form.controls.type" />
+
+<!--  <div class="saphena-input-field">-->
+<!--    <div class="font-medium capitalize ml-1">Кабинет обязателен</div>-->
+
+<!--    <label class="cursor-pointer mr-4">-->
+<!--      <input type="radio"-->
+<!--             [value]="true"-->
+<!--             [formControl]="form.controls.roomRequired">-->
+<!--      Да-->
+<!--    </label>-->
+<!--    <label class="cursor-pointer mr-4">-->
+<!--      <input type="radio"-->
+<!--             [value]="false"-->
+<!--             (click)="clearRooms()"-->
+<!--             [formControl]="form.controls.roomRequired">-->
+<!--      Нет-->
+<!--    </label>-->
+<!--  </div>-->
+
+
+<!--  @if (form.controls.roomRequired.value) {-->
+<!--    <label class="saphena-input-field">-->
+<!--      <div class="font-medium capitalize ml-1">Кабинеты</div>-->
+
+<!--      <mat-select multiple-->
+<!--                  [formControl]="form.controls.roomIds"-->
+<!--                  class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">-->
+<!--        @for (r of rooms(); track r.id) {-->
+<!--          <mat-option [value]="r.id">-->
+<!--            {{ r.name }}-->
+<!--          </mat-option>-->
+<!--        }-->
+<!--      </mat-select>-->
+<!--    </label>-->
+<!--  }-->
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

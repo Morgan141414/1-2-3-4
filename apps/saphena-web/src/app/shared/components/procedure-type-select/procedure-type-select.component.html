@@ -1,0 +1,28 @@
+<div class="saphena-input-field">
+  <label class="font-medium capitalize ml-1">
+    Тип
+  </label>
+
+  <select [formControl]="controlName()"
+          class="w-full border py-1 px-2 rounded-md focus:outline-blue-400"
+          [ngClass]="{ 'text-green-500' : controlName().value === procedureType.GREEN,
+                     'text-yellow-500' : controlName().value === procedureType.YELLOW,
+                     'text-blue-500' : controlName().value === procedureType.BLUE }">
+    <option [value]="procedureType.DEFAULT"
+            class="text-black">
+      Default
+    </option>
+    <option [value]="procedureType.GREEN"
+            class="text-green-600">
+      Зеленый
+    </option>
+    <option [value]="procedureType.YELLOW"
+            class="text-yellow-600">
+      Желтый
+    </option>
+    <option [value]="procedureType.BLUE"
+            class="text-blue-600">
+      Синий
+    </option>
+  </select>
+</div>

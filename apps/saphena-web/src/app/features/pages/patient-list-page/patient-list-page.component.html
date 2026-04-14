@@ -1,0 +1,25 @@
+<div class="flex justify-between mb-6">
+  <div class="flex gap-4 items-center rounded-md overflow-hidden border px-2.5 focus-within:border-blue-400">
+    <i class="fa-solid fa-magnifying-glass text-blue-500"></i>
+    <input [(ngModel)]="search"
+           (change)="getPatients()"
+           placeholder="Поиск по ИИН или имени"
+           class="border-none outline-none w-80 py-1">
+  </div>
+
+  <button (click)="openAddPatientPanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить пациента
+  </button>
+</div>
+
+<app-patient-table [patients]="patients().content"
+                   (edit)="openEditPatientPanel($event)"
+                   (deleted)="getPatients()" />
+
+@if (patients()!.totalPages > 1) {
+  <app-pagination [totalPages]="patients()!.totalPages"
+                  [number]="patients()!.number"
+                  [last]="patients()!.last"
+                  (pageChanged)="getPatients($event)" />
+}

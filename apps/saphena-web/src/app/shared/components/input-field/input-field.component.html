@@ -1,0 +1,9 @@
+<label class="saphena-input-field">
+  <div class="font-medium capitalize ml-1">
+    {{ label() }}
+  </div>
+
+  <input [formControl]="controlName()"
+         [placeholder]="placeholder()"
+         class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+</label>

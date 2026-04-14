@@ -1,0 +1,29 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">БИН</td>
+    <td class="px-2 pb-2">Название</td>
+    <td class="px-2 pb-2">Адрес</td>
+    <td class="px-2 pb-2">Контакты</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (org of organizations().content; track org.id) {
+      <tr [routerLink]="'/organizations/' + org.id"
+          class="border-b cursor-pointer hover:bg-gray-100 focus:bg-blue-100">
+        <td class="px-2 py-2">{{ org.bin || '-' }}</td>
+        <td class="px-2 py-2">{{ org.clinicName }}</td>
+        <td class="px-2 py-2">{{ org.address }}</td>
+        <td class="px-2 py-2">
+          <div>+{{ org.phone | mask: "0 (000) 000 00 00" }} </div>
+          <div class="text-gray-500">{{ org.email }}</div>
+        </td>
+        <td class="px-2 py-2"
+            (click)="$event.stopPropagation()">
+            <button (click)="openDeleteDialog(org)">
+              <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+            </button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

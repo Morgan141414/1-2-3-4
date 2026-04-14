@@ -1,0 +1,30 @@
+<form [formGroup]="form"
+     (submit)="onSubmit()"
+     class="flex flex-col gap-4">
+  <label class="saphena-input-field">
+    Доля врача (пациент от врача)
+    <input formControlName="doctorClientRatio"
+           type="number"
+           min="0"
+           max="1"
+           step="0.05"
+           placeholder="от 0 до 1"
+           class="w-60 border py-1 px-2 rounded-md focus:outline-blue-400" />
+  </label>
+
+  <label class="saphena-input-field">
+    Доля врача (пациент от клиники)
+    <input formControlName="clinicClientRatio"
+           type="number"
+           min="0"
+           max="1"
+           step="0.05"
+           placeholder="от 0 до 1"
+           class="w-60 border py-1 px-2 rounded-md focus:outline-blue-400" />
+  </label>
+
+  <button [disabled]="form.disabled"
+          class="w-fit bg-blue-600 px-4 py-2 text-white rounded-md disabled:opacity-60">
+    Обновить
+  </button>
+</form>

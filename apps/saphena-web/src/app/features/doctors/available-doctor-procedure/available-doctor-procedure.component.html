@@ -1,0 +1,21 @@
+<div class="flex gap-4 items-center">
+  <div class="border px-4 py-1 rounded"
+       [ngClass]="{ 'border-green-500' : orgProcedure().procedure.type === procedureType.GREEN,
+                    'border-yellow-500' : orgProcedure().procedure.type === procedureType.YELLOW,
+                    'border-blue-500' : orgProcedure().procedure.type === procedureType.BLUE,
+                    'border-gray-500' : orgProcedure().procedure.type === procedureType.DEFAULT }">
+    {{ orgProcedure().procedure.name }}
+  </div>
+
+  <input [(ngModel)]="price"
+         placeholder="цена"
+         mask="separator"
+         thousandSeparator=" "
+         suffix=" тг."
+         class="px-2 py-1 border rounded w-32">
+
+  <button (click)="addProcedure()"
+          class="hover:text-green-500 active:scale-95">
+    <i class="fa-solid fa-plus"></i>
+  </button>
+</div>

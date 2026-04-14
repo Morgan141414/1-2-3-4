@@ -1,0 +1,19 @@
+@if (patient().id) {
+  <div class="flex gap-20 pb-4 mb-6 border-b">
+    <div>
+      <div class="mb-0.5 uppercase text-gray-500 font-medium text-sm">
+        Пациент
+      </div>
+      <div>
+        {{ getFullname(patient().firstName, patient().lastName, patient().middleName )}}
+      </div>
+    </div>
+  </div>
+}
+
+@if (protocol()?.id) {
+  <app-protocol-form [protocol]="protocol()!"
+                     [patientId]="id()"
+                     [loading]="loading()"
+                     (onSave)="save($event)" />
+}

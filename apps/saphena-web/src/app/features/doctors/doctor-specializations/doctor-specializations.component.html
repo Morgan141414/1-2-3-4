@@ -1,0 +1,36 @@
+<div class="flex gap-6 mb-6">
+  <select [(ngModel)]="selectedSpecializationId"
+          [disabled]="availableSpecializations().length < 1"
+          class="min-w-60 border py-1 px-2 rounded-md focus:outline-blue-400">
+    @for (specialization of availableSpecializations(); track specialization.id) {
+      <option [value]="specialization.id">
+        {{ specialization.name }}
+      </option>
+    }
+  </select>
+
+  <button (click)="addSpecialization()"
+          [disabled]="availableSpecializations().length < 1"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md active:scale-95 disabled:opacity-60">
+    Добавить
+  </button>
+</div>
+
+<div class="flex gap-10 text-gray-600">
+  @for (docSpec of doctorSpecializations(); track docSpec.id) {
+    <button (click)="changeTab(docSpec)"
+            class="px-4 pb-1 uppercase hover:text-blue-700 active:scale-95"
+            [ngClass]="{'text-blue-500 border-b-2 border-blue-400' : docSpec.id === activeDoctorSpecializationTab().id }">
+      {{ docSpec.specialization.name }}
+    </button>
+  }
+</div>
+
+@if (activeDoctorSpecializationTab() && !!activeDoctorSpecializationTab()) {
+  <app-doctor-procedure-list [doctorSpecialization]="activeDoctorSpecializationTab()"/>
+
+  <button (click)="removeSpecialization()"
+          class="mt-8 text-sm font-medium text-white bg-red-500 px-4 py-2 rounded-md active:scale-95 disabled:opacity-60">
+    Удалить специализацию
+  </button>
+}

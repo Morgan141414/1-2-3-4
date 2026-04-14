@@ -1,0 +1,48 @@
+<app-iin-input-field [controlName]="iin"
+                     (filled)="onIinFilled()" />
+
+@if (iin.valid) {
+  <form [formGroup]="personalInfoForm"
+        class="flex flex-col gap-4">
+    <div class="mt-4 text-gray-500 uppercase text-sm">
+      Личная информация
+    </div>
+    <app-input-field [controlName]="personalInfoForm.controls.lastName"
+                     label="Фамилия"
+                     placeholder="Doe" />
+    <app-input-field [controlName]="personalInfoForm.controls.firstName"
+                     label="Имя"
+                     placeholder="John" />
+    <app-input-field [controlName]="personalInfoForm.controls.middleName"
+                     label="Отчество / Второе имя"
+                     placeholder="" />
+    <app-phone-input-field [controlName]="personalInfoForm.controls.phone" />
+    <app-input-field [controlName]="personalInfoForm.controls.email"
+                     label="Email"
+                     placeholder="Doe" />
+  </form>
+
+  @if (isNewDoctor()) {
+    <form [formGroup]="userForm"
+          class="mt-4 flex flex-col gap-4">
+      <div class="text-gray-500 uppercase text-sm">
+        Информация пользователя
+      </div>
+      <app-input-field [controlName]="userForm.controls.username"
+                       label="Логин"
+                       placeholder="doctor" />
+      <app-input-field [controlName]="userForm.controls.password"
+                       label="Пароль"
+                       placeholder="doctorPassword" />
+    </form>
+  }
+
+  @if (isNewDoctor()) {
+    <button (click)="createDoctor()"
+            [disabled]="iin.disabled"
+            class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+      Создать
+    </button>
+  }
+}
+

@@ -1,0 +1,9 @@
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="activeTab.set($event)" />
+
+@switch (activeTab()) {
+  @case ('logo') {
+    <app-organization-logo />
+  }
+}

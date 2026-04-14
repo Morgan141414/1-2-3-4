@@ -1,0 +1,11 @@
+<label class="saphena-input-field">
+  <div class="font-medium ml-1">
+    {{ label() }}
+  </div>
+
+  <input type="datetime-local"
+         [formControl]="controlName()"
+         (change)="changed.emit()"
+         step="600"
+         class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+</label>

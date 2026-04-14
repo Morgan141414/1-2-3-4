@@ -1,0 +1,42 @@
+<div class="flex items-end gap-4 mb-6">
+  <div>
+    <div class="font-medium text-gray-600">
+      Год
+    </div>
+    <select [(ngModel)]="year"
+            class="min-w-60 py-1 px-2 border rounded-md outline-none cursor-pointer focus:border-blue-400">
+      @for (year of years; track year) {
+        <option [value]="year">
+          {{ year }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <div>
+    <div class="font-medium text-gray-600">
+      Месяц
+    </div>
+    <select [(ngModel)]="month"
+            class="min-w-80 py-1 px-2 border rounded-md outline-none enabled:cursor-pointer focus:border-blue-400">
+      <option value="">Весь год</option>
+      <option [value]="1">январь</option>
+      <option [value]="2">февраль</option>
+      <option [value]="3">март</option>
+      <option [value]="4">апрель</option>
+      <option [value]="5">май</option>
+      <option [value]="6">июнь</option>
+      <option [value]="7">июль</option>
+      <option [value]="8">август</option>
+      <option [value]="9">сентябрь</option>
+      <option [value]="10">октябрь</option>
+      <option [value]="11">ноябрь</option>
+      <option [value]="12">декабрь</option>
+    </select>
+  </div>
+
+  <button (click)="search()"
+          class="py-2 text-sm font-medium text-white bg-blue-500 px-4 rounded-md hover:bg-blue-600 active:scale-95">
+    Поиск
+  </button>
+</div>

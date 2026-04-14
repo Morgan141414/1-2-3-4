@@ -1,0 +1,19 @@
+<div class="flex text-gray-500 mb-4 text-sm uppercase overflow-auto">
+  @for (ap of appointmentProcedures(); track ap.id) {
+    <div (click)="changed.emit(ap)"
+         [ngClass]="{ 'text-blue-600 border-blue-600' : activeTab().id === ap.id }"
+         class="pb-3 px-6 font-medium cursor-pointer border-b-2 hover:border-blue-400 hover:text-blue-400 text-nowrap">
+      {{ ap.procedure.name }}
+    </div>
+  }
+
+  @if (appointment().status !== appointmentStatusType.COMPLETED) {
+    <button (click)="addProcedure()"
+            [disabled]="assertAllProceduresCompleted()"
+            class="pb-3 px-6 border-b-2 hover:border-blue-400 hover:text-blue-400 disabled:text-inherit disabled:border-inherit">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+  }
+
+  <div class="pb-3 border-b-2 flex-auto"></div>
+</div>

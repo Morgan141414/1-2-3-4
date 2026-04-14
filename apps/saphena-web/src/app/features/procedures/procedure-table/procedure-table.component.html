@@ -1,0 +1,60 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">Название</td>
+    <td class="px-2 pb-2">Код</td>
+    <td class="px-2 pb-2">Тип</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (proc of procedures(); track proc.id) {
+      <tr class="border-b hover:bg-gray-100"
+          [ngClass]="{ 'bg-gray-50' : proc.deleted}">
+        <td class="px-2 py-2"
+            [ngClass]="{ 'text-gray-500' : proc.deleted}">
+          {{ proc.name }}
+        </td>
+        <td class="px-2 py-2"
+            [ngClass]="{ 'text-gray-500' : proc.deleted}">
+          {{ proc.key }}
+        </td>
+        <td class="px-2 py-2"
+            [ngClass]="{ 'text-green-500' : proc.type === procedureType.GREEN,
+                         'text-yellow-500' : proc.type === procedureType.YELLOW,
+                         'text-blue-500' : proc.type === procedureType.BLUE,
+                         'opacity-60' : proc.deleted }">
+          {{ proc.type || '-' }}
+        </td>
+        <td class="px-2 py-2">
+          @if (proc.deleted) {
+            <button class="hover:text-green-500 active:scale-95"
+                    (click)="openRestoreDialog(proc)">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          } @else {
+            <button [matMenuTriggerFor]="menu"
+                    class="w-4 hover:text-blue-500 active:scale-95">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item
+                      (click)="openEditPanel(proc.id)">
+                <i class="fa-solid fa-pencil mr-1 text-yellow-500"></i>
+                Редактировать
+              </button>
+              <button mat-menu-item
+                      (click)="openProtocolDialog(proc)">
+                <i class="fa-solid fa-file-medical mr-1 text-blue-500"></i>
+                Протокол
+              </button>
+              <button mat-menu-item
+                      (click)="openDeleteDialog(proc)">
+                <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+                Удалить
+              </button>
+            </mat-menu>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -1,0 +1,47 @@
+<div class="saphena-input-field mb-6 grid grid-cols-[300px_1fr] gap-x-20">
+  <div>
+    @if (field().title.trim()) {
+      {{ field().title }}
+    }
+  </div>
+
+  <div class="relative">
+    <textarea [formControl]="control()"
+              class="w-full border py-1 px-2 min-h-16 rounded-md focus:outline-blue-400"></textarea>
+
+    @if (procedureId()) {
+      <button [matMenuTriggerFor]="menu"
+              (click)="getTemplates()"
+              class="w-4 bg-white hover:text-blue-500 absolute right-1.5 top-1">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+      <mat-menu #menu="matMenu">
+        <div class="flex flex-col px-2 gap-1">
+          <input [(ngModel)]="templateName"
+                 [disabled]="control().value.length < 10"
+                 (click)="$event.stopPropagation()"
+                 class="border rounded-md bg-white py-0.5 px-2 outline-none focus:border-blue-400 disabled:bg-gray-300">
+          <button [disabled]="canSaveAsTemplate()"
+                  (click)="save($event)"
+                  class="bg-blue-500 py-0.5 text-white text-center rounded-md disabled:opacity-70">
+            сохранить как шаблон
+          </button>
+          @if (loading()) {
+            <mat-spinner diameter="22"></mat-spinner>
+          }
+          @else if (templates().length > 0) {
+            @for (t of templates(); track t.id) {
+              <button mat-menu-item
+                      (click)="onTemplateClicked(t.content)">
+                {{ t.name }}
+              </button>
+            }
+          }
+          @else {
+            <div class="mt-4">Нет шаблонов</div>
+          }
+        </div>
+      </mat-menu>
+    }
+  </div>
+</div>

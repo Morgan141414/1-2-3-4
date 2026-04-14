@@ -1,0 +1,11 @@
+<label class="saphena-input-field">
+  <div class="font-medium capitalize ml-1">
+    {{ label() }}
+  </div>
+
+  <input [formControl]="controlName()"
+         prefix="+"
+         [mask]="'0 (000) 000 00 00'"
+         placeholder="+7 (777) 777 77 77"
+         class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+</label>

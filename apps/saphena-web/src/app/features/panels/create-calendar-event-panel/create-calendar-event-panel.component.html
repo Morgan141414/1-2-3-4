@@ -1,0 +1,223 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <div class="flex gap-8">
+    <div>
+      <div class="font-medium">
+        Дата
+      </div>
+      <div>
+        {{ datetime() | date: 'dd.MM.yyyy' }}
+      </div>
+    </div>
+
+    <div>
+      <div class="font-medium">
+        Время
+      </div>
+      <div>
+        {{ datetime() | date: 'HH:mm' }}
+      </div>
+    </div>
+  </div>
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Конец приема
+    </div>
+
+    <input matInput
+           [matTimepicker]="timepicker"
+           [matTimepickerMin]="minTime()"
+           [matTimepickerMax]="maxTime()"
+           [formControl]="form.controls.end"
+           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400 cursor-pointer">
+    <mat-timepicker #timepicker
+                    interval="10min" />
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label class="cursor-pointer">
+      <input type="radio"
+             [value]="appointmentPatientMode.REGISTERED"
+             [(ngModel)]="patientMode"
+             [ngModelOptions]="{ standalone: true }"
+             (change)="onPatientModeChange()" />
+      Зарегистрированный пациент
+    </label>
+
+    <label class="cursor-pointer">
+      <input type="radio"
+             [value]="appointmentPatientMode.TEMPORARY"
+             [(ngModel)]="patientMode"
+             [ngModelOptions]="{ standalone: true }"
+             (change)="onPatientModeChange()" />
+      Временный пациент
+    </label>
+  </div>
+
+  @if (patientMode() === appointmentPatientMode.REGISTERED) {
+    <div class="saphena-input-field">
+      <div class="font-medium">
+        Пациент
+      </div>
+      <mat-select formControlName="patientId"
+                  (selectionChange)="checkForFirstEntry()"
+                  class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+        <div class="py-3 px-4 border-b mb-2 border-gray-400 flex justify-between">
+          <input type="text"
+                 [(ngModel)]="search"
+                 [ngModelOptions]="{standalone: true}"
+                 (ngModelChange)="getPatients()"
+                 placeholder="Поиск"
+                 class="bg-transparent outline-none border-none">
+          <i class="fa-solid fa-xmark cursor-pointer active:scale-95"
+             (click)="search.set('')"></i>
+        </div>
+
+        <button class="w-full px-4 py-3 text-center uppercase text-blue-500"
+                (click)="openAddPatientPanel()">
+          Добавить пациента
+        </button>
+
+        @if (patients().content && patients().content.length > 0) {
+          @for (patient of patients().content; track patient.id) {
+            <mat-option [value]="patient.id">
+              {{ getFullname(patient.firstName, patient.lastName, patient.middleName) }}
+            </mat-option>
+          }
+        } @else {
+          <mat-option>
+            Пациент не найден
+          </mat-option>
+        }
+      </mat-select>
+    </div>
+  } @else {
+    <div class="saphena-input-field">
+      <div class="font-medium">
+        Полное имя
+      </div>
+
+      <input class="w-full border py-1 px-2 rounded-md focus:outline-blue-400"
+             [formControl]="form.controls.tempPatientName">
+    </div>
+
+    <app-phone-input-field [controlName]="form.controls.tempPatientPhone" />
+  }
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      От доктора
+    </div>
+    <div class="flex gap-10">
+      <label class="cursor-pointer">
+        <input type="radio"
+               formControlName="clientOwnershipType"
+               [value]="clientOwnershipType.DOCTOR"
+               class="ml-2">
+        Да
+      </label>
+      <label class="cursor-pointer">
+        <input type="radio"
+               formControlName="clientOwnershipType" [value]="clientOwnershipType.CLINIC"
+               class="ml-2">
+        Нет
+      </label>
+    </div>
+  </div>
+
+  @if (isFirstEntry()) {
+    <div class="saphena-input-field">
+      <div class="font-medium">
+        Источник
+      </div>
+      <select formControlName="trafficSource"
+              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+        @for (type of trafficSourceTypes; track type) {
+          <option [value]="type">
+            {{ getTrafficSourceTypeName(type) }}
+          </option>
+        }
+      </select>
+    </div>
+  }
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Процедуры
+    </div>
+
+    <div class="flex gap-4 saphena-input-field">
+      <select [(ngModel)]="selectedProcedure"
+              [ngModelOptions]="{standalone: true}"
+              [ngClass]="{ 'border-rose-600' : isProceduresEmpty() }"
+              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+        @for (dc of doctorProcedures(); track dc.id) {
+          <option [ngValue]="dc">
+            {{ dc.orgProcedure.procedure.name }}
+          </option>
+        }
+      </select>
+      <button type="button"
+              (click)="addProcedure()"
+              class="bg-blue-500 text-sm text-white px-3 rounded active:scale-95">
+        добавить
+      </button>
+    </div>
+
+    <table class="mt-4 w-full">
+      @for (p of appointmentProcedures(); track p.procedureId; let i = $index) {
+        <tr>
+          <td class="px-2 w-full">
+            {{ p.procedureName }}
+          </td>
+          <td class="px-2">
+            <input [(ngModel)]="p.actualPrice"
+                   [ngModelOptions]="{standalone: true}"
+                   placeholder="цена"
+                   mask="separator"
+                   thousandSeparator=" "
+                   suffix=" тг."
+                   class="px-2 py-1 border rounded w-32">
+          </td>
+          <td class="px-2">
+            <button type="button"
+                    (click)="removeProcedure(i)"
+                    class="active:scale-95">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </td>
+        </tr>
+      }
+    </table>
+  </div>
+
+  @if (isRoomRequired()) {
+    <div class="saphena-input-field">
+      <div class="font-medium mb-1">
+        Кабинет
+      </div>
+      @if (rooms().length > 0) {
+        <select formControlName="roomId"
+                class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+          @for (r of rooms(); track r.id) {
+            <option [value]="r.id"
+                    class="cursor-pointer mr-4">
+              {{ r.name }}
+            </option>
+          }
+        </select>
+      } @else {
+        <div [ngClass]="{ 'text-red-500' : form.controls.roomId.invalid }">
+          Нет доступных кабинетов
+        </div>
+      }
+    </div>
+  }
+
+  <button [disabled]="form.disabled"
+          class="mt-6 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

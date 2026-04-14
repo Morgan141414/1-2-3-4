@@ -1,0 +1,17 @@
+@if (label()) {
+  <div>{{ label() }}</div>
+}
+<div class="flex gap-2">
+  @for (b of boxes(); track b; let i = $index) {
+    <input #box
+           class="w-10 h-12 text-center font-semibold border rounded-lg outline-none focus:border-blue-500 transition"
+           [disabled]="disabled()"
+           [value]="digits()[i]"
+           inputmode="numeric"
+           autocomplete="one-time-code"
+           maxlength="1"
+           (keydown)="onKeyDown($event, i)"
+           (input)="onInput($event, i)"
+           (paste)="onPaste($event)" />
+  }
+</div>

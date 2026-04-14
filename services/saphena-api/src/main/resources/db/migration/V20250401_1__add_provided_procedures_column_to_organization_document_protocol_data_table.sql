@@ -1,0 +1,2 @@
+alter table organization_document_protocol_data
+add column provided_procedures jsonb;

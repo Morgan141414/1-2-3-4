@@ -1,0 +1,2 @@
+alter table organization_document_protocol
+add column procedure_list_required boolean not null default false;

@@ -1,0 +1,22 @@
+# Gradle build/cache
+.gradle/
+build/
+out/
+
+# Wrapper dists (скачанные Gradle версии)
+**/wrapper/dists/
+.gradle/wrapper/
+
+# Logs and temp
+*.log
+*.tmp
+*.swp
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db

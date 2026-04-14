@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        @page {
+            size: A4 portrait;
+            @top-center {
+                content: element(header);
+            }
+            @bottom-center {
+                content: element(footer);
+            }
+            margin: 0 0 35mm;
+            padding-top: 213px;
+        }
+        * {
+            font-family: Roboto, Arial, sans-serif;
+        }
+        body {
+            font-size: 14px;
+            counter-reset: page 0;
+        }
+
+        .header {
+            position: running(header);
+            background-color: #f7f7f7;
+            color: black;
+            height: 200px;
+            border-bottom: 3px solid black;
+        }
+        .header__table {
+            height: 100%;
+            width: 100%;
+            border-spacing: 10px;
+            padding: 8mm 8mm 5mm;
+        }
+        .header__table__top {
+            width: 100%;
+            vertical-align: top;
+        }
+        .header__table__top__clinic-name {
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .header__table__top__organization {
+            width:33%;
+            font-size: 12px
+        }
+        .header__table__bottom {
+            height: 100%;
+            vertical-align: bottom;
+        }
+        .header__table__bottom__procedure-name {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .footer {
+            position: running(footer);
+            border-top: black 1px solid;
+            margin-right: 8mm;
+            margin-left: 8mm;
+        }
+        .footer__table {
+            width: 100%;
+            border-spacing: 4px 10px;
+        }
+        .footer #page-number::before {
+            counter-increment: page;
+            content: counter(page);
+            position: absolute;
+            right: 0;
+            bottom: 4px;
+            color: gray;
+        }
+
+        .patient-info {
+            margin-right: 6mm;
+            margin-left: 6mm;
+            margin-bottom: 16px;
+        }
+        .patient-info__table {
+            border-spacing: 3mm 0;
+            width: 100%;
+        }
+        .patient-info__table__title {
+            width: 33%;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .patient-info__table__patient-details {
+            width: 50%;
+        }
+        .patient-info__table__patient-details div {
+            margin-bottom: 8px;
+        }
+
+        .content {
+            margin-right: 6mm;
+            margin-left: 6mm;
+        }
+        .content__section {
+            margin-bottom: 12mm;
+        }
+        .content__section:last-child {
+            margin-bottom: 0;
+        }
+        .content_section-title {
+            margin: 0 3mm 3mm;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .content__table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .content table tr td {
+            padding: 8px 3mm;
+            vertical-align: top;
+        }
+        .content table tr:nth-child(odd) {
+            background: #f3f3f3;
+        }
+
+
+        .content__table-block {
+            margin-top: 12px;
+            page-break-inside: avoid;
+        }
+        .protocol-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .protocol-table th,
+        .protocol-table td {
+            border: 1px solid #000;
+            padding: 4px 6px;
+        }
+        .protocol-table th {
+            font-weight: bold;
+            text-align: center;
+        }
+        .protocol-table td:first-child {
+            font-weight: bold;
+        }
+        .table-title {
+            margin: 0 3mm 1.5mm;
+        }
+    </style>
+</head>
+    <body>
+        <div class="header">
+            <table class="header__table">
+                <tr class="header__table__top">
+                    <td class="header__table__top__clinic-name">
+                        <img th:if="${not #strings.isEmpty(organizationLogo)}"
+                             th:src="${organizationLogo}"
+                             style="width: auto; height: 60px;"
+                             alt="" />
+                        <div th:if="${#strings.isEmpty(organizationLogo)}"
+                             th:text="${organizationName}"
+                             style="font-size: 30px"></div>
+                    </td>
+                    <td class="header__table__top__organization">
+                        <div th:text="${organizationName}"></div>
+                        <div th:text="${address}"></div>
+                        <div th:text="${'+' + organizationPhone}"></div>
+                    </td>
+                </tr>
+                <tr class="header__table__bottom">
+                    <td class="header__table__bottom__procedure-name">
+                        <div th:text="${protocolName}"></div>
+                    </td>
+                    <td>
+                        <div style="margin-bottom: 4px">
+                            <span th:if="${protocolLang == 'ru'}">Дата</span>
+                            <span th:if="${protocolLang == 'kk'}">Күн</span>
+                            <span th:if="${protocolLang == 'en'}">Date</span>
+                        </div>
+                        <div th:text="${protocolDate}"
+                             style="font-size: 12px"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <table class="footer__table">
+                <tr>
+                    <td style="width:33%; font-weight: bold;">
+                        <span th:text="${specName}"></span>
+                    </td>
+                    <td style="font-weight: bold">
+                        <span th:if="${protocolLang == 'ru'}">Ассистент</span>
+                        <span th:if="${protocolLang == 'kk'}">Көмекші</span>
+                        <span th:if="${protocolLang == 'en'}">Assistant</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td th:text="${doctorShortname}"></td>
+                    <td th:text="${assistantShortname}"></td>
+                </tr>
+            </table>
+            <div id="page-number"></div>
+        </div>
+
+        <div class="patient-info">
+            <table class="patient-info__table">
+                <tr style="vertical-align: top">
+                    <td class="patient-info__table__title">
+                        <span th:if="${protocolLang == 'ru'}">Данные пациента</span>
+                        <span th:if="${protocolLang == 'kk'}">Пациент деректері</span>
+                        <span th:if="${protocolLang == 'en'}">Patient data</span>
+                    </td>
+                    <td class="patient-info__table__patient-details">
+                        <div th:text="${patientFullname}"></div>
+                        <div>
+                            <span th:if="${protocolLang == 'ru'}">ИИН: </span>
+                            <span th:if="${protocolLang == 'kk'}">ЖСН: </span>
+                            <span th:if="${protocolLang == 'en'}">IIN: </span>
+                            <span th:text="${patientIin}"></span>
+                        </div>
+                        <div>
+                            <span th:if="${protocolLang == 'ru'}">Тел: </span>
+                            <span th:if="${protocolLang == 'kk'}">Тел: </span>
+                            <span th:if="${protocolLang == 'en'}">Tel: </span>
+                            +<span th:text="${patientPhone}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:if="${protocolLang == 'ru'}">Дата рождения:</div>
+                        <div th:if="${protocolLang == 'kk'}">Туған жылы:</div>
+                        <div th:if="${protocolLang == 'en'}">Date of birth:</div>
+                        <div th:text="${patientBirthDate}"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content">
+            <div th:each="section : ${sections}"
+                 class="content__section">
+                <div th:text="${section.title}"
+                     class="content_section-title"></div>
+
+                <table class="content__table">
+                    <tr th:each="field : ${section.fields}"
+                        th:if="${field.type != 'TABLE' and (!#strings.isEmpty(field.value) or field.type == 'SUBTITLE')}">
+                        <td style="width: 33%">
+                            <div th:text="${field.title}"
+                                 th:style="${field.type == 'SUBTITLE'} ? 'font-weight: bold;' : ''"></div>
+                        </td>
+                        <td>
+                            <div th:text="${field.value}"
+                                 style="white-space: pre-line"></div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- TABLE поля -->
+                <div th:each="field : ${section.fields}"
+                     th:if="${field.type == 'TABLE'}"
+                     class="content__table-block">
+
+                    <div class="table-title"
+                         th:text="${field.title}"></div>
+
+                    <table class="protocol-table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th th:each="col : ${field.columns}"
+                                th:text="${col.title}"></th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="row : ${field.rows}">
+                            <td th:text="${row.title}"></td>
+
+                            <td th:each="col : ${field.columns}"
+                                th:text="${field.data[row.key + ':' + col.key]}">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

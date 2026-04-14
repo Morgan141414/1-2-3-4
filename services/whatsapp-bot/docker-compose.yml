@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    volumes:
+      - wwebjs_auth:/app/.wwebjs_auth
+
+volumes:
+  wwebjs_auth:

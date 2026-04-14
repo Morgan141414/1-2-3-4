@@ -1,0 +1,12 @@
+<app-year-month-filter (searchClicked)="getTrafficAnalytics($event.year, $event.month)" />
+
+<div class="w-96">
+  @if (chartLabels() && chartDatasets()) {
+    <canvas baseChart
+            type="pie"
+            [labels]="chartLabels()!"
+            [datasets]="chartDatasets()!"
+            [legend]="true">
+    </canvas>
+  }
+</div>

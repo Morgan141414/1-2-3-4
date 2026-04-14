@@ -1,0 +1,41 @@
+<div class="saphena-input-field mb-6 grid grid-cols-[300px_1fr] gap-x-20">
+  <div>
+    @if (field().title.trim()) {
+      {{ field().title }}
+    }
+  </div>
+  <mat-select multiple
+              [compareWith]="compare"
+              [formControl]="control().controls.diagnosis!"
+              (selectionChange)="onChange()"
+              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+    <mat-select-trigger class="flex gap-2 flex-wrap">
+      @for (mkb of control().controls.diagnosis!.value; track mkb.key) {
+        <mat-chip [removable]="true"
+                  (removed)="removeDiagnosis(mkb)">
+          {{ mkb.key + ' - ' + mkb.name }}
+          <div matChipRemove>
+            <i class="fa-solid fa-xmark"></i>
+          </div>
+        </mat-chip>
+      }
+    </mat-select-trigger>
+
+    <div class="py-3 px-4 border-b mb-2 border-gray-400 flex justify-between">
+      <input type="text"
+             [(ngModel)]="search"
+             (ngModelChange)="onFilterChange()"
+             (keydown.space)="$event.stopPropagation()"
+             placeholder="Поиск"
+             class="bg-transparent outline-none border-none">
+      <i class="fa-solid fa-xmark cursor-pointer active:scale-95"
+         (click)="clearSearch()"></i>
+    </div>
+
+    @for (mkb of filteredItemList(); track mkb.key) {
+      <mat-option [value]="mkb" >
+        {{ mkb.key + ' - ' + mkb.name }}
+      </mat-option>
+    }
+  </mat-select>
+</div>

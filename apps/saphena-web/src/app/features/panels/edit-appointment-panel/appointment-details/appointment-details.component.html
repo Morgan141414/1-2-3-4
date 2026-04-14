@@ -1,0 +1,123 @@
+<div class="flex flex-col gap-2">
+  <div>
+    <div class="font-medium">
+      Пациент:
+      @if (appointment().patient) {
+        <span class="uppercase text-yellow-500"
+              [ngClass]="{
+                  'text-yellow-500': appointment().patient.verificationStatus === patientDocumentVerificationStatus.PROVIDED,
+                  'text-green-500': appointment().patient.verificationStatus === patientDocumentVerificationStatus.VERIFIED,
+                  'text-red-500': appointment().patient.verificationStatus === patientDocumentVerificationStatus.REJECTED
+                }">
+            {{ getPatientDocumentVerificationStatusName(appointment().patient.verificationStatus) }}
+          </span>
+      } @else {
+        <span class="uppercase text-yellow-500">
+            Времменный
+          </span>
+      }
+    </div>
+    <div>
+      @if (appointment().patient) {
+        {{ getFullname(appointment().patient.firstName, appointment().patient.lastName, appointment().patient.middleName) }} /
+        <span class="font-medium text-gray-600">
+            {{ appointment().patient.iin || appointment().patient.documentNumber }}
+          </span>
+      } @else {
+        <div>{{ appointment().tempPatientName }}</div>
+        <div class="text-gray-600">
+          +{{ appointment().tempPatientPhone! | mask: "0 (000) 000 00 00" }}
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (appointment().patient && appointment().patient.phone) {
+    <div class="font-medium">
+      Контактная информация:
+      <div class="font-normal text-gray-600">
+        Телефон:
+        <span class="text-black">
+            +{{ appointment().patient.phone! | mask: "0 (000) 000 00 00" }}
+          </span>
+      </div>
+      @if (appointment().patient.emergencyContact) {
+        <div class="font-normal text-gray-600">
+          Экстренный контакт:
+          <span class="text-black">
+              +{{ appointment().patient.emergencyContact! | mask: "0 (000) 000 00 00" }}
+            </span>
+        </div>
+      }
+    </div>
+  }
+
+  <div>
+    <div class="font-medium">
+      Доктор:
+    </div>
+    <div>
+      {{ getFullname(appointment().doctor.firstName, appointment().doctor.lastName, appointment().doctor.middleName) }}
+    </div>
+  </div>
+
+  @if (appointment().procedures.length > 0) {
+    <div class="saphena-input-field">
+      <div class="font-medium">
+        Процедуры:
+      </div>
+      <div class="grid grid-cols-[2fr_1fr] gap-x-4">
+        @for (appProcedure of appointment().procedures; track appProcedure.id) {
+          <div>
+            {{ appProcedure.procedure.name }}
+          </div>
+          <div>
+            {{ appProcedure.actualPrice ? appProcedure.actualPrice + 'тг.' : '' }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (appointment().room) {
+    <div>
+      <div class="font-medium">
+        Кабинет:
+      </div>
+      <div>
+        {{ appointment().room }}
+      </div>
+    </div>
+  }
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Время:
+    </div>
+    <div>
+      {{ appointment().datetime | date: 'dd.MM.yyyy HH:mm' }}
+      @if (appointment().endDatetime) {
+        -
+        {{ appointment().endDatetime | date: 'dd.MM.yyyy HH:mm' }}
+      }
+    </div>
+  </div>
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Тип оплаты:
+    </div>
+    <div>
+      {{ getPaymentTypeName(appointment().paymentType) }}
+    </div>
+  </div>
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Статус оплаты:
+    </div>
+    <div>
+      {{ getPaymentStatusName(appointment().paymentStatus) }}
+    </div>
+  </div>
+</div>

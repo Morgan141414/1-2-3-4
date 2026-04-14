@@ -1,0 +1,14 @@
+<div class="mt-4 flex flex-col gap-2">
+  @for (procedure of doctorProcedures(); track procedure.id) {
+    <app-active-doctor-procedure [doctorProcedure]="procedure"
+                                 (updated)="getDoctorProcedures()" />
+  }
+
+  <div class="mb-4"></div>
+
+  @for (orgProcedure of availableProcedures(); track orgProcedure.id) {
+    <app-available-doctor-procedure [orgProcedure]="orgProcedure"
+                                    [doctorSpecialization]="doctorSpecialization()"
+                                    (added)="getDoctorProcedures()" />
+  }
+</div>

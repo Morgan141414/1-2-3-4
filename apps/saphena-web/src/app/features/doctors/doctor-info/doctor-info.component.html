@@ -1,0 +1,65 @@
+<div class="flex gap-20">
+  @if (role === userRoleType.ROLE_SUPERADMIN) {
+    <div class="flex flex-col gap-2">
+      <div class="mb-4 uppercase text-gray-600">
+        Пользовательская Информация
+      </div>
+      <div>
+        <div class="font-medium capitalize">
+          ID:
+        </div>
+        <div>{{ doctor().user.id }}</div>
+      </div>
+
+      <div>
+        <div class="font-medium capitalize">
+          Логин:
+        </div>
+        <div>{{ doctor().user.username }}</div>
+      </div>
+
+      <button (click)="openEditUserPanel()"
+              class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+        Сменить пароль
+      </button>
+    </div>
+  }
+
+  <div class="flex flex-col gap-2">
+    <div class="mb-4 uppercase text-gray-600">
+      Личная Информация
+    </div>
+
+    <form [formGroup]="form"
+          (ngSubmit)="onSubmit()"
+          class="flex flex-col gap-2">
+      <app-iin-input-field [controlName]="form.controls.iin" />
+      <app-input-field [controlName]="form.controls.firstName"
+                       label="Имя"
+                       placeholder="John" />
+      <app-input-field [controlName]="form.controls.lastName"
+                       label="Фамилия"
+                       placeholder="Doe" />
+      <app-input-field [controlName]="form.controls.middleName"
+                       label="Отчество / Второе имя"
+                       placeholder="" />
+      <app-phone-input-field [controlName]="form.controls.phone" />
+      <app-input-field [controlName]="form.controls.email"
+                       label="Email"
+                       placeholder="Doe" />
+
+      @if (role === userRoleType.ROLE_SUPERADMIN && form.enabled) {
+        <button class="mt-4 bg-green-600 p-2 text-white rounded-md disabled:opacity-60">
+          Сохранить
+        </button>
+      }
+    </form>
+
+    @if(role === userRoleType.ROLE_SUPERADMIN && form.disabled) {
+      <button (click)="form.enable()"
+              class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+        Редактировать
+      </button>
+    }
+  </div>
+</div>

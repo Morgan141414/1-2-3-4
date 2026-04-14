@@ -1,0 +1,40 @@
+<div class="flex gap-8 items-start">
+  <app-date-input-field [controlName]="form.controls.startDate"
+                        label="Начало" />
+
+  <app-date-input-field [controlName]="form.controls.endDate"
+                        label="Конец" />
+
+  <label class="saphena-input-field">
+    <div class="font-medium capitalize ml-1">Комментарий</div>
+
+    <textarea [formControl]="form.controls.note"
+              class="min-w-80 border py-1 px-2 rounded-md focus:outline-blue-400"></textarea>
+  </label>
+
+  <button (click)="createVacation()"
+          class="mt-5 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md active:scale-95">
+    Добавить
+  </button>
+</div>
+
+<table class="w-full mt-6">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">№</td>
+    <td class="px-2 pb-2">Начало</td>
+    <td class="px-2 pb-2">Конец</td>
+    <td class="px-2 pb-2">Комментарий</td>
+  </thead>
+  <tbody>
+    @for (v of vacations(); track v; let i = $index) {
+      <tr class="border-b">
+        <td class="px-2 py-2">
+          {{ i + 1 | leadingZeros : 2 }}
+        </td>
+        <td class="px-2 py-2">{{ v.startDate | date : 'dd.MM.yyyy' }}</td>
+        <td class="px-2 py-2">{{ v.endDate | date : 'dd.MM.yyyy' }}</td>
+        <td class="px-2 py-2">{{ v.note }}</td>
+      </tr>
+    }
+  </tbody>
+</table>

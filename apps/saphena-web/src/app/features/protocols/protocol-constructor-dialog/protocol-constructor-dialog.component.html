@@ -1,0 +1,15 @@
+<div class="flex mt-4 mx-6 justify-between">
+  <div>
+    <div class="text-lg text-black">{{ data.targetName }}</div>
+    <div class="text-gray-500">{{ data.targetId }}</div>
+  </div>
+</div>
+
+<mat-dialog-content>
+  @if (!loading()) {
+    <app-protocol-constructor [protocol]="protocol()"
+                              [targetType]="data.targetType"
+                              (onSave)="save($event)"
+                              (onReset)="resetProtocol()" />
+  }
+</mat-dialog-content>

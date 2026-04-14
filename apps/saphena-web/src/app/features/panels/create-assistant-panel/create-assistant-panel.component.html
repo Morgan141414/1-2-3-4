@@ -1,0 +1,50 @@
+<form [formGroup]="userForm"
+      class="mt-4 flex flex-col gap-4">
+  <div class="text-gray-500 uppercase text-sm">
+    Информация пользователя
+  </div>
+  <app-input-field [controlName]="userForm.controls.username"
+                   label="Логин"
+                   placeholder="doctor" />
+  <app-input-field [controlName]="userForm.controls.password"
+                   label="Пароль"
+                   placeholder="doctorPassword" />
+</form>
+
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <div class="mt-4 text-gray-500 uppercase text-sm">
+    Личная информация
+  </div>
+  <app-input-field [controlName]="form.controls.lastName"
+                   label="Фамилия"
+                   placeholder="Doe" />
+  <app-input-field [controlName]="form.controls.firstName"
+                   label="Имя"
+                   placeholder="John" />
+  <app-input-field [controlName]="form.controls.middleName"
+                   label="Отчество / Второе имя"
+                   placeholder="" />
+
+  <label class="saphena-input-field">
+    <div class="font-medium capitalize ml-1">Типы</div>
+
+    <div class="mb-6 saphena-input-field">
+      <mat-select multiple
+                  formControlName="types"
+                  class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+        @for (type of assistantTypes; track type) {
+          <mat-option [value]="type">
+            {{ getAssistantTypeName(type) }}
+          </mat-option>
+        }
+      </mat-select>
+    </div>
+  </label>
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

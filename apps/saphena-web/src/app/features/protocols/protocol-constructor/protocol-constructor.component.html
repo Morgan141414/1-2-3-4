@@ -1,0 +1,308 @@
+<div class="text-right mb-4">
+  @if (protocol()?.modified && targetType() !== protocolTargetType.ORG_DOC) {
+    <button class="mr-4 font-medium text-white bg-yellow-500 px-4 py-2 rounded-md hover:bg-yellow-600 active:scale-95 disabled:opacity-60"
+            (click)="onReset.emit()">
+      Cбросить протокол
+    </button>
+  }
+  <button class="font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 active:scale-95 disabled:opacity-60"
+          (click)="save()">
+    Сохранить
+  </button>
+</div>
+
+<div class="mb-6 grid grid-cols-2 gap-10">
+  <app-input-field [controlName]="form.controls.templateFileName"
+                   label="НАЗВАНИЕ HTML ШАБЛОНА"
+                   placeholder="pdf-template.html" />
+<!--  <div>-->
+<!--    <div class="mb-2 uppercase text-gray-600 font-medium">-->
+<!--      Использовать данные консультации-->
+<!--    </div>-->
+
+<!--    <div class="flex gap-4">-->
+<!--      <label class="flex gap-2 items-center cursor-pointer">-->
+<!--        <input type="radio"-->
+<!--               [formControl]="form.controls.consultationRequired"-->
+<!--               [value]="true">-->
+<!--        <div>ДА</div>-->
+<!--      </label>-->
+<!--      <label class="flex gap-2 items-center cursor-pointer">-->
+<!--        <input type="radio"-->
+<!--               [formControl]="form.controls.consultationRequired"-->
+<!--               [value]="false">-->
+<!--        <div>НЕТ</div>-->
+<!--      </label>-->
+<!--    </div>-->
+<!--  </div>-->
+</div>
+
+<form [formGroup]="form">
+  <div formArrayName="sections">
+    @for (section of sections().controls; let sectionIndex = $index; track section.value) {
+      <div [formGroupName]="sectionIndex" class="mb-8">
+        <div class="flex gap-4 mb-4">
+          <label class="saphena-input-field w-full">
+            <div class="font-medium uppercase ml-1">
+              Название секции
+            </div>
+            <input formControlName="title"
+                   placeholder="Русский"
+                   class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+            <input formControlName="titleKk"
+                   placeholder="Qazaq"
+                   class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+            <input formControlName="titleEn"
+                   placeholder="English"
+                   class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+          </label>
+
+          <button (click)="removeSection(sectionIndex)"
+                  class="mt-1 self-end text-sm text-red-500 hover:text-red-700 active:scale-95 uppercase">
+            удалить секцию
+          </button>
+        </div>
+
+        <mat-accordion formArrayName="fields"
+                       cdkDropList
+                       (cdkDropListDropped)="drop(sectionIndex, $event)">
+          @for (field of fields(sectionIndex).controls; let fieldIndex = $index; track field) {
+            <mat-expansion-panel hideToggle
+                                 cdkDrag
+                                 class="flex-1">
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{ field.value.key }}</mat-panel-title>
+                <mat-panel-description>{{ field.value.title }}</mat-panel-description>
+
+                <button (click)="removeField(sectionIndex, fieldIndex)"
+                        class="text-gray-500 hover:text-red-600 active:scale-95">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </mat-expansion-panel-header>
+
+              <div [formGroupName]="fieldIndex"
+                   class="flex gap-2 mb-2">
+                <div class="w-full grid grid-cols-[1fr_2fr_1fr_1fr] gap-2">
+                  <label class="saphena-input-field">
+                    <div class="font-medium capitalize ml-1">
+                      Ключ
+                    </div>
+                    <input formControlName="key"
+                           placeholder="key"
+                           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+                  </label>
+
+                  <label class="saphena-input-field">
+                    <div class="font-medium capitalize ml-1">
+                      Название
+                    </div>
+                    <input formControlName="title"
+                           placeholder="Русский"
+                           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+                    <input formControlName="titleKk"
+                           placeholder="Qazaq"
+                           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+                    <input formControlName="titleEn"
+                           placeholder="English"
+                           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+                  </label>
+
+                  <label class="saphena-input-field">
+                    <div class="font-medium capitalize ml-1">
+                      Гендер
+                    </div>
+                    <select formControlName="gender"
+                            class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                      <option [value]="null">
+                        Оба
+                      </option>
+                      <option [value]="genderType.MALE">
+                        Муж
+                      </option>
+                      <option [value]="genderType.FEMALE">
+                        Жен
+                      </option>
+                    </select>
+                  </label>
+
+                  <div>
+                    <div class="mb-2 uppercase text-gray-600 font-medium">
+                      Обязательное поле
+                    </div>
+                    <div class="flex gap-4">
+                      <label class="flex gap-2 items-center cursor-pointer">
+                        <input type="radio"
+                               formControlName="required"
+                               [value]="true">
+                        <div>ДА</div>
+                      </label>
+                      <label class="flex gap-2 items-center cursor-pointer">
+                        <input type="radio"
+                               formControlName="required"
+                               [value]="false">
+                        <div>НЕТ</div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <label class="saphena-input-field">
+                    <div class="font-medium capitalize ml-1">
+                      Тип поля ввода
+                    </div>
+                    <select formControlName="type"
+                            class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                      @for (ft of fieldTypes; track ft) {
+                        <option [value]="ft">
+                          {{ ft }}
+                        </option>
+                      }
+                    </select>
+                  </label>
+
+                  @if (field.value.type === protocolFieldType.ASSISTANT_SELECT) {
+                    <label class="saphena-input-field">
+                      <div class="font-medium capitalize ml-1">
+                        Тип ассистента
+                      </div>
+                      <select formControlName="assistantType"
+                              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                        @for (at of assistantTypes; track at) {
+                          <option [value]="at">
+                            {{ getAssistantTypeName(at) }}
+                          </option>
+                        }
+                      </select>
+                    </label>
+                  }
+                  @else if (field.value.type === protocolFieldType.DOCTOR_SELECT) {
+                    <label class="saphena-input-field">
+                      <div class="font-medium capitalize ml-1">
+                        Специализация
+                      </div>
+                      <select formControlName="doctorSpecializationId"
+                              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                        @for (s of specializations(); track s.id) {
+                          <option [value]="s.id">
+                            {{ s.name }}
+                          </option>
+                        }
+                      </select>
+                    </label>
+                  }
+                  @else if (field.value.type !== protocolFieldType.TABLE) {
+                    <label class="saphena-input-field">
+                      <div class="font-medium capitalize ml-1">
+                        Ед. измерения
+                      </div>
+                      <input formControlName="unit"
+                             class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+                    </label>
+                  }
+
+                  @if (field.value.type === protocolFieldType.RADIO ||
+                        field.value.type === protocolFieldType.SELECT ||
+                          field.value.type === protocolFieldType.CHECKBOX) {
+                    <label class="saphena-input-field">
+                      <div class="font-medium capitalize ml-1">
+                        Варианты
+                      </div>
+                      <div formArrayName="options">
+                        @for(option of options(sectionIndex, fieldIndex).controls; let optionIndex = $index; track option) {
+                          <div class="flex gap-2 items-center mb-1">
+                            <input [formControlName]="optionIndex"
+                                   class="w-full border py-1 px-2 rounded-md focus:outline-blue-400" />
+                            <button (click)="removeOption(sectionIndex,fieldIndex, optionIndex)"
+                                    class="cursor-pointer hover:text-red-500">
+                              <i class="fa-solid fa-minus"></i>
+                            </button>
+                          </div>
+                        }
+                      </div>
+
+                      <button (click)="addOption(sectionIndex, fieldIndex)"
+                              class="cursor-pointer hover:text-blue-500 w-full text-center">
+                        <i class="fa-solid fa-plus"></i>
+                      </button>
+                    </label>
+                  }
+
+                  @if (field.value.type === protocolFieldType.TABLE) {
+                    <div class="col-span-4 overflow-auto">
+                      <div class="font-medium capitalize ml-1">
+                        Колонки
+                      </div>
+                      <div formArrayName="tableColumns"
+                           class="flex gap-6 items-center">
+                        @for (c of tableColumns(sectionIndex, fieldIndex).controls; let colIndex = $index; track c) {
+                          <div [formGroupName]="colIndex"
+                               class="relative saphena-input-field">
+                            <input formControlName="key"
+                                   placeholder="ключ"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <input formControlName="title"
+                                   placeholder="название"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <input formControlName="titleKk"
+                                   placeholder="название(қаз)"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <input formControlName="titleEn"
+                                   placeholder="название(eng)"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <i class="fa-solid fa-xmark hover:text-red-500 active:scale-95 cursor-pointer absolute top-1 -right-4"
+                               (click)="removeTableColumn(sectionIndex, fieldIndex, colIndex)"></i>
+                          </div>
+                        }
+                        <i class="fa-solid fa-plus hover:text-blue-500 active:scale-95 cursor-pointer"
+                           (click)="addTableColumn(sectionIndex, fieldIndex)"></i>
+                      </div>
+                    </div>
+
+                    <div class="col-span-4 overflow-auto">
+                      <div class="font-medium capitalize ml-1">
+                        Строки
+                      </div>
+                      <div formArrayName="tableRows"
+                           class="flex gap-6 items-center">
+                        @for (r of tableRows(sectionIndex, fieldIndex).controls; let rowIndex = $index; track r) {
+                          <div [formGroupName]="rowIndex"
+                               class="relative saphena-input-field">
+                            <input formControlName="key"
+                                   placeholder="ключ"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <input formControlName="title"
+                                   placeholder="название"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <input formControlName="titleKk"
+                                   placeholder="название(қаз)"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <input formControlName="titleEn"
+                                   placeholder="название(eng)"
+                                   class="block w-full border py-1 px-2 rounded-md focus:outline-blue-400" >
+                            <i class="fa-solid fa-xmark hover:text-red-500 active:scale-95 cursor-pointer absolute top-1 -right-4"
+                               (click)="removeTableRow(sectionIndex, fieldIndex, rowIndex)"></i>
+                          </div>
+                        }
+                        <i class="fa-solid fa-plus hover:text-blue-500 active:scale-95 cursor-pointer"
+                           (click)="addTableRow(sectionIndex, fieldIndex)"></i>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+
+        <button (click)="addField(sectionIndex)"
+                class="mt-4 cursor-pointer hover:text-blue-500 w-full text-center">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+    }
+
+    <button (click)="addSection()"
+            class="mb-8 text-blue-500 hover:text-blue-700 active:scale-95 uppercase">
+      Добавить секцию
+    </button>
+  </div>
+</form>

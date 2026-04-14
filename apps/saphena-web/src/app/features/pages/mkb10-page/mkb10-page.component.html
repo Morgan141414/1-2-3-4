@@ -1,0 +1,27 @@
+<div class="flex justify-end mb-6">
+  <button (click)="fileInput.click()"
+          [disabled]="loading()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95 disabled:opacity-60 disabled:scale-100">
+    Обновить справочник
+  </button>
+
+  <input type="file"
+         #fileInput
+         (change)="onFileSelected($event)" class="hidden">
+</div>
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">Код</td>
+  <td class="px-2 pb-2">Название</td>
+  </thead>
+  <tbody>
+    @for (item of dictionary(); track item.key) {
+      <tr class="border-b cursor-pointer hover:bg-gray-100">
+        <td class="px-2 py-2">{{ item.key }}</td>
+        <td class="px-2 py-2">{{ item.name }}</td>
+      </tr>
+    }
+  </tbody>
+</table>
+

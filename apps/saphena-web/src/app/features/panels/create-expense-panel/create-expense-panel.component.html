@@ -1,0 +1,120 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <div class="saphena-input-field">
+    <div class="font-medium mb-1">
+      Тип
+    </div>
+    <select formControlName="typeId"
+            class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      @for (et of expenseTypes(); track et.id) {
+        <option [value]="et.id"
+                class="cursor-pointer mr-4">
+          {{ et.name }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <app-date-input-field [controlName]="form.controls.date" />
+
+  <label class="saphena-input-field">
+    <div class="font-medium capitalize ml-1">
+      БИН / ИИН поставщика
+    </div>
+
+    <input formControlName="vendorBin"
+           class="w-full border py-1 px-2 rounded-md focus:outline-blue-400"
+           (keydown.space)="$event.preventDefault()"
+           (input)="onInput()">
+  </label>
+
+  <app-input-field [controlName]="form.controls.vendorName"
+                   label="Название / Имя поставщика" />
+
+  <app-input-field [controlName]="form.controls.contactPersonName"
+                   label="Контактное лицо" />
+
+  <app-phone-input-field [controlName]="form.controls.contactPersonPhone"
+                         label="Телефон" />
+
+  <label class="saphena-input-field">
+    <div class="font-medium capitalize ml-1">Комментарий</div>
+    <textarea formControlName="comment"
+              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400"></textarea>
+  </label>
+
+  <div formArrayName="expenseList"
+       class="mt-4">
+    <div class="font-medium uppercase text-gray-500 ml-1 mb-4">
+      Список товаров / услуг
+    </div>
+    @for (e of expenseList().controls; let i = $index; track i) {
+      <div [formGroupName]="i"
+           class="flex items-start gap-4 mb-4">
+        <div class="flex-1">
+          <div class="saphena-input-field mb-2 flex gap-4">
+            <div class="w-28">
+              Название
+            </div>
+            <input formControlName="name"
+                   class="flex-1 px-2 py-1 border rounded">
+          </div>
+          <div class="saphena-input-field mb-2 flex gap-4">
+            <div class="w-28">
+              Цена за шт.
+            </div>
+            <input formControlName="cost"
+                   placeholder="цена"
+                   mask="separator"
+                   thousandSeparator=" "
+                   suffix=" тг."
+                   class="flex-1 px-2 py-1 border rounded">
+          </div>
+          <div class="saphena-input-field mb-2 flex gap-4">
+            <div class="w-28">
+              Кол-во
+            </div>
+            <input formControlName="count"
+                   mask="separator"
+                   suffix=" шт."
+                   class="flex-1 px-2 py-1 border rounded">
+          </div>
+          <div class="saphena-input-field flex gap-4">
+            <div class="w-28">
+              Общ. цена
+            </div>
+            <input formControlName="sum"
+                   placeholder="цена"
+                   mask="separator"
+                   thousandSeparator=" "
+                   suffix=" тг."
+                   readonly
+                   class="flex-1 px-2 py-1 border rounded">
+          </div>
+        </div>
+
+        <button type="button"
+                (click)="removeExpense(i)"
+                class="active:scale-95">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    }
+
+    <button (click)="addExpense()"
+            class="mb-8 text-sm text-blue-500 hover:text-blue-700 active:scale-95 uppercase">
+      Добавить
+    </button>
+  </div>
+
+  <div>
+    <span class="font-medium">ИТОГО: </span>
+    {{ form.controls.totalCost.value! | mask : 'separator' }} тг.
+  </div>
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Сохранить
+  </button>
+</form>

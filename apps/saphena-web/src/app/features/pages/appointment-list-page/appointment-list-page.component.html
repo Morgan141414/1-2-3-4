@@ -1,0 +1,49 @@
+<div class="flex flex-wrap gap-4 mb-6">
+  <div class="px-2 rounded-md overflow-hidden border focus-within:border-blue-400">
+    <select [(ngModel)]="filter().status"
+            class="pl-1 pr-3 h-full outline-none cursor-pointer">
+      <option value="">Все</option>
+      @for (type of appointmentStatusTypes; track type) {
+        <option [value]="type">
+          {{ getAppointmentStatusName(type) }}
+        </option>
+      }
+    </select>
+  </div>
+
+  @if (role !== UserRoleType.ROLE_PATIENT) {
+    <div class="flex gap-4 items-center rounded-md overflow-hidden border px-2.5 focus-within:border-blue-400">
+      <i class="fa-solid fa-magnifying-glass text-blue-500"></i>
+      <input [(ngModel)]="filter().search"
+             placeholder="Поиск по ИИН или имени"
+             class="border-none outline-none w-80 py-1">
+    </div>
+  }
+
+  <div class="flex gap-2 items-center">
+    <span class="text-gray-500">от</span>
+    <input type="date"
+           [(ngModel)]="filter().from"
+           class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+
+    <span class="text-gray-500">по</span>
+    <input type="date"
+           [(ngModel)]="filter().to"
+           class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+  </div>
+
+  <button (click)="getAppointments()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 rounded-md hover:bg-blue-600 active:scale-95">
+    Поиск
+  </button>
+</div>
+
+<app-appointment-table [appointments]="appointments().content"
+                       (verified)="getAppointments()" />
+
+@if (appointments()!.totalPages > 1) {
+  <app-pagination [totalPages]="appointments()!.totalPages"
+                  [number]="appointments()!.number"
+                  [last]="appointments()!.last"
+                  (pageChanged)="getAppointments($event)" />
+}

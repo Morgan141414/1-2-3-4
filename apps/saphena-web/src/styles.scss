@@ -1,0 +1,45 @@
+@use '@angular/material' as mat;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+html {
+  @include mat.theme((
+    typography: (
+      plain-family: Inter,
+      brand-family: sans-serif,
+    )
+  ));
+}
+
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.snackbar-success {
+  @include mat.snack-bar-overrides((
+    container-color: #4BB543,
+    supporting-text-color: #ffffff
+  ))
+}
+
+.snackbar-warning {
+  @include mat.snack-bar-overrides((
+    container-color: #ae8306,
+    supporting-text-color: #ffffff
+  ))
+}
+
+.saphena-input-field {
+  .ng-invalid.ng-touched {
+    border-color: #E11D48FF;
+  }
+}
+
+textarea {
+  will-change: transform;
+  field-sizing: content;
+}

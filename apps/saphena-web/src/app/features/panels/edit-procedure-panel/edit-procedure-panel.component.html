@@ -1,0 +1,22 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.name"
+                   label="название"
+                   placeholder="Первичный прием" />
+  <app-input-field [controlName]="form.controls.nameKk"
+                   label="название (Қаз)"
+                   placeholder="Кеңес беру" />
+  <app-input-field [controlName]="form.controls.nameEn"
+                   label="название (Eng)"
+                   placeholder="Consultation" />
+  <app-input-field [controlName]="form.controls.key"
+                   label="код"
+                   placeholder="CONSULTATION" />
+  <app-procedure-type-select [controlName]="form.controls.type" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Сохранить
+  </button>
+</form>

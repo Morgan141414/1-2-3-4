@@ -1,0 +1,78 @@
+<div class="my-4 mx-6 flex items-center gap-4">
+  <div class="font-medium uppercase">
+    Специализация:
+  </div>
+
+  <select class="border py-1 px-2 rounded-md cursor-pointer focus:outline-blue-400"
+          [(ngModel)]="selectedSpecId"
+          (change)="onSpecializationChange()">
+    @for (s of specializationCatalog(); track s.id) {
+      <option [value]="s.id">
+        {{ s.name }}
+      </option>
+    }
+  </select>
+</div>
+
+<mat-dialog-content>
+  <div class="grid grid-cols-2 justify-between gap-8">
+    <div>
+      <div class="mb-6 font-medium uppercase text-gray-500">
+        процедуры
+      </div>
+
+      @if (procedureCatalog().length > 0) {
+        <div class="flex flex-col gap-4">
+          @for (p of procedureCatalog(); track p.id) {
+            <div>
+              <label class="cursor-pointer font-medium">
+                <input type="checkbox"
+                       [(ngModel)]="p.added"
+                       [disabled]="p.modified || loading()">
+                <span class="ml-2">
+              {{ p.name }}
+            </span>
+              </label>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div>
+      <div class="mb-6 font-medium uppercase text-gray-500">
+        документы
+      </div>
+
+      @if (specDocCatalog().length > 0) {
+        <div class="flex flex-col gap-4">
+          @for (sd of specDocCatalog(); track sd.id) {
+            <div>
+              <label class="cursor-pointer font-medium">
+                <input type="checkbox"
+                       [(ngModel)]="sd.added"
+                       [disabled]="sd.modified || loading()">
+                <span class="ml-2">
+                  {{ sd.name }}
+                </span>
+              </label>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex gap-4">
+  <button mat-dialog-close
+          class="text-sm font-medium text-white bg-gray-500 px-4 py-2 rounded-md hover:bg-gray-600 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
+          [disabled]="loading()">
+    Отменить
+  </button>
+  <button class="text-sm font-medium text-white bg-green-500 px-4 py-2 rounded-md hover:bg-green-600 active:scale-95 disabled:pointer-events-none disabled:opacity-60"
+          [disabled]="loading()"
+          (click)="save()">
+    Сохранить
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,16 @@
+<div class="saphena-input-field grid grid-cols-[300px_1fr] gap-x-20">
+  <div>{{ getAssistantTypeName(field().assistantType) }}:</div>
+
+  <div class="mb-6">
+    <mat-select multiple
+                [formControl]="control().controls.assistantIds"
+                (selectionChange)="onChange()"
+                class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      @for (assistant of assistants(); track assistant.id) {
+        <mat-option [value]="assistant.id">
+          {{ assistantFullname(assistant) }}
+        </mat-option>
+      }
+    </mat-select>
+  </div>
+</div>

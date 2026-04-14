@@ -1,0 +1,49 @@
+@if (protocolData()) {
+  <div class="flex gap-6">
+    <select [(ngModel)]="lang"
+            class="py-1 px-2 border rounded-md outline-none cursor-pointer focus:border-blue-400">
+      <option value="ru">Рус</option>
+      <option value="kk">Қаз</option>
+      <option value="en">Eng</option>
+    </select>
+
+    <button (click)="downloadPdf()"
+            [disabled]="isEdit() || loading()"
+            class="bg-blue-500 px-4 py-1.5 text-white rounded-md hover:bg-blue-400 active:scale-95 disabled:opacity-60 disabled:pointer-events-none">
+      Распечатать
+    </button>
+
+    @if (canEdit()) {
+      @if (isEdit()) {
+        <button (click)="isEdit.set(false)"
+                class="px-4 py-1.5 border rounded-md active:scale-95">
+          Отмена
+        </button>
+      }
+      @else {
+        <button (click)="isEdit.set(true)"
+                class="bg-yellow-500 px-4 py-1.5 text-white rounded-md hover:bg-yellow-400 active:scale-95">
+          Редактировать
+        </button>
+      }
+    }
+  </div>
+
+  @if (!isEdit()) {
+    <app-protocol-data [protocolData]="protocolData()!" />
+  }
+  @else if (protocolData()?.id && protocol()?.id) {
+    <app-edit-protocol-data-form [protocol]="protocol()!"
+                                 [protocolData]="protocolData()!"
+                                 [doctorAssistants]="doctorAssistants()"
+                                 [loading]="loading()"
+                                 (onEdit)="edit($event)" />
+  }
+}
+@else if (protocol()) {
+  <app-protocol-form [protocol]="protocol()!"
+                     [patientId]="appointment().patient.id"
+                     [doctorAssistants]="doctorAssistants()"
+                     [loading]="loading()"
+                     (onSave)="save($event)" />
+}

@@ -1,0 +1,114 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    @if (role !== userRoleType.ROLE_PATIENT) {
+      <td class="px-2 pb-2">ФИО пациента</td>
+    }
+    @if (role !== userRoleType.ROLE_DOCTOR) {
+      <td class="px-2 pb-2">Врач</td>
+    }
+    <td class="px-2 pb-2">Дата и время</td>
+    <td class="px-2 pb-2">Статус</td>
+    <td class="px-2 pb-2">Услуги</td>
+    <td class="px-2 pb-2">Кабинет</td>
+    @if (role !== userRoleType.ROLE_PATIENT) {
+      <td class="px-2 pb-2">Комментарий</td>
+    }
+    @if (role !== userRoleType.ROLE_DOCTOR) {
+      <td class="px-2 pb-2"></td>
+    }
+  </thead>
+  <tbody>
+    @for (appointment of appointments(); track appointment.id; let i = $index) {
+      <tr (click)="goToAppointmentDetails(appointment)"
+          class="border-b hover:bg-gray-100"
+          [ngClass]="{
+            'cursor-pointer': (role === userRoleType.ROLE_DOCTOR && appointment.status !== appointmentStatusType.CANCELLED) ||
+            (role === userRoleType.ROLE_PATIENT && appointment.status === appointmentStatusType.COMPLETED),
+          }">
+        @if (role !== userRoleType.ROLE_PATIENT) {
+          <td class="px-2 py-2">
+            <div>
+              @if (appointment.patient) {
+                {{ getFullname(appointment.patient.firstName, appointment.patient.lastName, appointment.patient.middleName) }}
+              } @else {
+                {{ appointment.tempPatientName }}
+              }
+            </div>
+          </td>
+<!--          <td class="px-2 py-2">-->
+<!--            @if (appointment.patient) {-->
+<!--              <div class="uppercase text-yellow-500"-->
+<!--                   [ngClass]="{-->
+<!--                  'text-yellow-500': appointment.patient.verificationStatus === patientDocumentVerificationStatus.PROVIDED,-->
+<!--                  'text-green-500': appointment.patient.verificationStatus === patientDocumentVerificationStatus.VERIFIED,-->
+<!--                  'text-red-500': appointment.patient.verificationStatus === patientDocumentVerificationStatus.REJECTED-->
+<!--                }">-->
+<!--                {{ getPatientDocumentVerificationStatusName(appointment.patient.verificationStatus) }}-->
+<!--              </div>-->
+<!--            } @else {-->
+<!--              <div class="uppercase">-->
+<!--                {{ getPatientDocumentVerificationStatusName('') }}-->
+<!--              </div>-->
+<!--            }-->
+<!--          </td>-->
+        }
+        @if (role !== userRoleType.ROLE_DOCTOR) {
+          <td class="px-2 py-2">
+            {{ getShortFullName(appointment.doctor.firstName, appointment.doctor.lastName, appointment.doctor.middleName) }}
+          </td>
+        }
+        <td class="px-2 py-2">
+          {{ appointment.datetime | date: 'dd.MM.yyyy HH:mm' }}
+        </td>
+        <td class="px-2 py-2 font-medium uppercase"
+            [ngClass]="{
+              'text-blue-500': appointment.status === appointmentStatusType.SCHEDULED,
+              'text-yellow-500': appointment.status === appointmentStatusType.IN_PROGRESS,
+              'text-green-500': appointment.status === appointmentStatusType.COMPLETED,
+              'text-red-500': appointment.status === appointmentStatusType.CANCELLED
+            }">
+          {{ getAppointmentStatusName(appointment.status) }}
+        </td>
+        <td class="px-2 py-2 overflow-hidden">
+          <div class="flex gap-2 flex-wrap">
+            @for (ap of appointment.procedures.slice(0, 2); track ap.id) {
+              <div class="px-4 py-1 border-2 rounded-md w-fit text-nowrap last:truncate"
+                   [ngClass]="{
+                   'border-green-500': ap.procedure.type === procedureType.GREEN,
+                   'border-blue-500': ap.procedure.type === procedureType.BLUE,
+                   'border-yellow-500': ap.procedure.type === procedureType.YELLOW,
+                 }">
+                {{ ap.procedure.name }}
+              </div>
+            }
+            @if (appointment.procedures.length > 2) {
+              <span class="self-end">...</span>
+            }
+          </div>
+        </td>
+        <td class="px-2 py-2">
+          {{ appointment.room }}
+        </td>
+        @if (role !== userRoleType.ROLE_PATIENT) {
+          <td class="px-2 py-2">
+            @if (appointment.comment) {
+              <button [matTooltip]="appointment.comment"
+                      class="px-3 py-0.5 rounded-md bg-blue-500 text-white hover:bg-blue-400">
+                показать
+              </button>
+            }
+          </td>
+        }
+        @if (role !== userRoleType.ROLE_DOCTOR && role !== userRoleType.ROLE_PATIENT) {
+          <td class="px-2 py-2">
+            <button (click)="showDetails($event, appointment.id)"
+                    class="px-2 py-0.5 bg-blue-400 text-white rounded-md hover:bg-blue-500 active:scale-95 flex items-center gap-2">
+              <div>подробнее</div>
+              <i class="fa-solid fa-circle-info"></i>
+            </button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

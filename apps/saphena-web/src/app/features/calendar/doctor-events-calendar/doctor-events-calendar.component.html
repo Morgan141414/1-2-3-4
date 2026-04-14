@@ -1,0 +1,44 @@
+<app-calendar-action-buttons [view]="view()"
+                             [showViewTypeButtons]="true"
+                             (viewTypeButtonClicked)="setView($event)" />
+
+@switch (view()) {
+  @case (CalendarView.Week) {
+    <mwl-calendar-week-view [viewDate]="viewDate()"
+                            [events]="events()"
+                            [weekStartsOn]="DAYS_OF_WEEK.MONDAY"
+                            [dayStartHour]="8"
+                            [dayEndHour]="20"
+                            [hourDuration]="30"
+                            [hourSegments]="3"
+                            precision="minutes"
+                            locale="ru-KZ"
+                            [eventTitleTemplate]="customEventTitleTemplate"
+                            (dayHeaderClicked)="changeDay($event.day.date)"
+                            (eventClicked)="onEventClicked($event.event)" />
+  }
+  @case (CalendarView.Day) {
+    <mwl-calendar-day-view [viewDate]="viewDate()"
+                           [events]="events()"
+                           [dayStartHour]="8"
+                           [dayEndHour]="20"
+                           [hourDuration]="30"
+                           [hourSegments]="3"
+                           locale="ru-KZ"
+                           [eventTitleTemplate]="customEventTitleTemplate"
+                           (eventClicked)="onEventClicked($event.event)" />
+  }
+}
+
+<ng-template #customEventTitleTemplate let-event="event">
+  <div class="flex gap-2">
+    <div class="text-yellow-500"
+         [ngClass]="{
+           '!text-green-500' : event.meta.verificationStatus === patientDocumentVerificationStatus.VERIFIED,
+           '!text-red-500': event.meta.verificationStatus === patientDocumentVerificationStatus.REJECTED
+         }">
+      <i class="fa-solid fa-id-card"></i>
+    </div>
+    <div>{{ event.meta.patientFullname }}</div>
+  </div>
+</ng-template>

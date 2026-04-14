@@ -1,0 +1,40 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="relative flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.username"
+                   label="логин"
+                   placeholder="saphena_doctor" />
+  <label class="saphena-input-field">
+    <div class="font-medium capitalize ml-1">
+      пароль
+    </div>
+
+    <div class="relative">
+      <input formControlName="password"
+             [type]="hidePassword() ? 'password' : 'text'"
+             placeholder="password"
+             class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+
+      <button (click)="hidePassword.set(!hidePassword())"
+              type="button"
+              class="absolute outline-none text-blue-400 hover:text-blue-500 right-2 top-1">
+        @if (hidePassword()) {
+          <i class="fa-solid fa-eye"></i>
+        } @else {
+          <i class="fa-solid fa-eye-slash"></i>
+        }
+      </button>
+    </div>
+  </label>
+
+  <button [disabled]="form.disabled"
+          class="bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Войти
+  </button>
+
+  @if (showError()) {
+    <div class="text-rose-600 absolute -bottom-8 left-0 right-0 text-center">
+      Неверный логин или пароль
+    </div>
+  }
+</form>

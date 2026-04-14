@@ -1,0 +1,40 @@
+<div class="flex justify-between mb-8">
+  <div>
+    <button mwlCalendarPreviousView
+            [(viewDate)]="viewDate"
+            [view]="view()"
+            class="px-4 py-1 bg-blue-400 text-white rounded-l-md hover:bg-blue-500 active:scale-95">
+      Назад
+    </button>
+    <button mwlCalendarToday
+            [(viewDate)]="viewDate"
+            class="px-4 py-1 bg-gray-100 hover:bg-gray-300 active:scale-95">
+      Сегодня
+    </button>
+    <button mwlCalendarNextView
+            [view]="view()"
+            [(viewDate)]="viewDate"
+            class="px-4 py-1 bg-blue-400 text-white rounded-r-md hover:bg-blue-500 active:scale-95">
+      Вперед
+    </button>
+  </div>
+
+  <div>
+    <h3>{{ viewDate() | calendarDate:(view() + 'ViewTitle'):'ru-KZ' }}</h3>
+  </div>
+
+  @if (showViewTypeButtons()) {
+    <div>
+      <button (click)="viewTypeButtonClicked.emit(CalendarView.Week)"
+              [ngClass]="view() === CalendarView.Week ? ' bg-blue-600' : ' bg-blue-400'"
+              class="px-4 py-1 text-white rounded-l-md hover:bg-blue-500 active:scale-95">
+        Неделя
+      </button>
+      <button (click)="viewTypeButtonClicked.emit(CalendarView.Day)"
+              [ngClass]="view() === CalendarView.Day ? ' bg-blue-600' : ' bg-blue-400'"
+              class="px-4 py-1 text-white rounded-r-md hover:bg-blue-500 active:scale-95">
+        День
+      </button>
+    </div>
+  }
+</div>

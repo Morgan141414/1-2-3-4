@@ -1,0 +1,30 @@
+<app-tabs [tabs]="tabs"
+          [activeTab]="activeTab()"
+          (changed)="activeTab.set($event)" />
+
+@if (doctor()) {
+  @switch (activeTab()) {
+    @case ('info') {
+        <app-doctor-info [id]="id()"
+                         [doctor]="doctor()!"
+                         (updated)="getDoctorInfo()" />
+    }
+    @case ('specializations') {
+      <app-doctor-specializations [orgUserId]="doctor()!.orgUserId!"
+                                  [specializations]="specializations()" />
+    }
+    @case ('schedule') {
+      <app-doctor-schedule [orgUserId]="doctor()!.orgUserId!" />
+    }
+    @case ('vacations') {
+      <app-doctor-vacation-list [orgUserId]="doctor()!.orgUserId!" />
+    }
+    @case ('assistants') {
+      <app-doctor-assistants [id]="id()"
+                             [orgUserId]="doctor()!.orgUserId!" />
+    }
+    @case ('settings') {
+      <app-doctor-settings [orgUserId]="doctor()!.orgUserId!" />
+    }
+  }
+}

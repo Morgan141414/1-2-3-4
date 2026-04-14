@@ -1,0 +1,47 @@
+<div class="flex justify-between items-start">
+
+  <div class="flex gap-20 mb-6">
+    @if (patient()) {
+      <div>
+        <div class="mb-0.5 uppercase text-gray-500 font-medium text-sm">
+          Пациент
+        </div>
+        <div>
+          {{ getFullname(patient()?.firstName, patient()?.lastName, patient()?.middleName )}}
+        </div>
+      </div>
+    }
+
+    <div>
+      <div class="mb-0.5 uppercase text-gray-500 font-medium text-sm">
+        Дата
+      </div>
+      <div>
+        {{ datetime() | date: 'dd.MM.yyyy HH:mm' }}
+      </div>
+    </div>
+
+    <div>
+      <div class="mb-0.5 uppercase text-gray-500 font-medium text-sm">
+        Статус
+      </div>
+      <div class="uppercase"
+           [ngClass]="{
+              'text-blue-500': status() === appointmentStatusType.SCHEDULED,
+              'text-yellow-500': status() === appointmentStatusType.IN_PROGRESS,
+              'text-green-500': status() === appointmentStatusType.COMPLETED,
+              'text-red-500': status() === appointmentStatusType.CANCELLED
+            }">
+        {{ getAppointmentStatusName(status()) }}
+      </div>
+    </div>
+  </div>
+
+  @if (role === UserRoleType.ROLE_DOCTOR && status() !== appointmentStatusType.COMPLETED) {
+    <button (click)="closeAppointment()"
+            [disabled]="assertAllProceduresAndDocumentsCompleted()"
+            class="h-fit bg-green-500 px-4 py-1.5 text-white rounded-md hover:bg-green-400 active:scale-95 disabled:opacity-60 disabled:scale-100">
+      Закрыть прием
+    </button>
+  }
+</div>

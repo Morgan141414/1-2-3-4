@@ -1,0 +1,100 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <div>
+    <div class="font-medium mb-1">
+      Гражданин РК
+    </div>
+    <label class="cursor-pointer mr-4">
+      <input type="radio"
+             [value]="true"
+             formControlName="isCitizen">
+      Да
+    </label>
+    <label class="cursor-pointer">
+      <input type="radio"
+             [value]="false"
+             formControlName="isCitizen">
+      Нет
+    </label>
+  </div>
+
+  <div>
+    <div class="font-medium mb-1">
+      Пол
+    </div>
+    <label class="cursor-pointer mr-4">
+      <input type="radio"
+             [value]="genderType.MALE"
+             formControlName="gender">
+      Мужчина
+    </label>
+    <label class="cursor-pointer">
+      <input type="radio"
+             [value]="genderType.FEMALE"
+             formControlName="gender">
+      Женщина
+    </label>
+  </div>
+
+  <app-iin-input-field [controlName]="form.controls.iin"
+                       (filled)="onIinFilled()" />
+
+  <div class="saphena-input-field">
+    <div class="font-medium mb-1">
+      Тип документа
+    </div>
+    <select formControlName="documentType"
+            class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      @if (form.controls.isCitizen.value) {
+        @for (docType of documentTypes; track docType) {
+          <option [value]="docType"
+                  class="cursor-pointer mr-4">
+            {{ getPatientDocumentTypeName(docType) }}
+          </option>
+        }
+      } @else {
+        <option [value]="patientDocumentType.PASSPORT"
+                class="cursor-pointer mr-4">
+          {{ getPatientDocumentTypeName(patientDocumentType.PASSPORT) }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <app-doc-number-input-field [controlName]="form.controls.documentNumber"
+                              (filled)="onDocNumberFilled()" />
+
+  <app-date-input-field [controlName]="form.controls.issuedAt"
+                        label="Дата выдачи" />
+
+  <app-date-input-field [controlName]="form.controls.expiresAt"
+                        label="Годен до" />
+
+  <app-input-field [controlName]="form.controls.lastName"
+                   label="Фамилия"
+                   placeholder="Doe" />
+  <app-input-field [controlName]="form.controls.firstName"
+                   label="Имя"
+                   placeholder="John" />
+  <app-input-field [controlName]="form.controls.middleName"
+                   label="Отчество / Второе имя"
+                   placeholder="" />
+  <app-date-input-field [controlName]="form.controls.birthdate"
+                        label="Дата рождения" />
+  <app-kato-select-field [control]="form.controls.city" />
+  <app-input-field [controlName]="form.controls.address"
+                   label="Адрес"
+                   placeholder="ул. Туран 1" />
+  <app-phone-input-field [controlName]="form.controls.phone" />
+  <app-phone-input-field [controlName]="form.controls.emergencyContact"
+                         label="Экстренный контакт"/>
+  <app-input-field [controlName]="form.controls.email"
+                   label="Email"
+                   placeholder="patient@gmail.com" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>

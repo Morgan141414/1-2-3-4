@@ -1,0 +1,24 @@
+@if (appointment().id && appointmentProcedures()) {
+  <app-appointment-details-header [id]="appointment().id"
+                                  [status]="appointment().status"
+                                  [patient]="appointment().patient"
+                                  [datetime]="appointment().datetime" />
+
+  <app-tabs [tabs]="tabs"
+            [activeTab]="activeTab()"
+            (changed)="selectTab($event)"/>
+
+  <div class="pb-10">
+    @if (activeTab() === 'procedures') {
+      <app-appointment-details-procedures [appointment]="appointment()" />
+    }
+    @else if (activeTab() === 'documents') {
+      <app-appointment-details-documents [appointment]="appointment()" />
+    }
+    @else if (activeTab() === 'comment') {
+      <div>
+        {{ appointment().comment }}
+      </div>
+    }
+  </div>
+}

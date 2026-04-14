@@ -1,0 +1,25 @@
+@if (savedDocuments().length > 0) {
+  <div class="mb-8">
+    @for (savedDoc of savedDocuments(); track savedDoc.id) {
+      <div class="border rounded-md px-3 py-2 mb-2 cursor-pointer"
+           [ngClass]="{'border-blue-500 border-2' : savedDoc.id === activeDocId()}"
+           (click)="selectSavedDocument(savedDoc.id)">
+        {{ savedDoc.name }}
+      </div>
+    }
+  </div>
+}
+
+@if (appointment().status !== appointmentStatusType.COMPLETED) {
+  <div class="ml-2 mb-1 text-gray-600 font-medium text-sm uppercase">
+    Доступные
+  </div>
+
+  @for (doc of availableDocuments(); track doc.id) {
+    <div class="border rounded-md px-3 py-2 mb-2 cursor-pointer"
+         [ngClass]="{'border-blue-500 border-2' : doc.id === activeDocId()}"
+         (click)="selectDocument(doc.id)">
+      {{ doc.name }}
+    </div>
+  }
+}

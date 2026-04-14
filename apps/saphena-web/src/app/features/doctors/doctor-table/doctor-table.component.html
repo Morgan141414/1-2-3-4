@@ -1,0 +1,56 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    @if (role === userRoleType.ROLE_SUPERADMIN) {
+      <td class="px-2 pb-2">ID</td>
+    }
+    <td class="px-2 pb-2">ФИО</td>
+    <td class="px-2 pb-2">ИИН</td>
+    <td class="px-2 pb-2">Телефон</td>
+    <td class="px-2 pb-2">Email</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (doctor of doctors(); track doctor.id; let i = $index) {
+      <tr class="border-b hover:bg-gray-100 focus:bg-blue-100"
+          [ngClass]="{ 'cursor-pointer': role !== userRoleType.ROLE_SUPERADMIN }"
+          (click)="goToDoctorDetails(doctor.id)">
+        @if (role === userRoleType.ROLE_SUPERADMIN) {
+        <td class="px-2 py-2">
+          {{ doctor.id }}
+        </td>
+        }
+        <td class="px-2 py-2">
+          {{ fullname(doctor) }}
+        </td>
+        <td class="px-2 py-2">
+          {{ doctor.iin }}
+        </td>
+        <td class="px-2 py-2">
+          @if(doctor.phone) {
+            +{{ doctor.phone | mask: "0 (000) 000 00 00" }}
+          } @else {
+            -
+          }
+        </td>
+        <td class="px-2 py-2">
+          {{ doctor.email || '-' }}
+        </td>
+        <td class="px-2 py-2 flex gap-4"
+            (click)="$event.stopPropagation()">
+          @if (role === userRoleType.ROLE_SUPERADMIN) {
+            <button (click)="openEditPanel(doctor.id)">
+              <i class="fa-solid fa-pen mr-1 text-yellow-600"></i>
+            </button>
+            <button (click)="openEditPasswordPanel(doctor.id)">
+              <i class="fa-solid fa-key mr-1 text-amber-500"></i>
+            </button>
+          } @else {
+            <button (click)="openDeleteDialog(doctor)">
+              <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+            </button>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

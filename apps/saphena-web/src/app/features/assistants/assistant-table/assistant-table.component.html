@@ -1,0 +1,38 @@
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">ФИО</td>
+    <td class="px-2 pb-2">Тип</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (assistant of assistants(); track assistant.id; let i = $index) {
+      <tr class="border-b hover:bg-gray-100">
+        <td class="px-2 py-2"
+            [ngClass]="{ 'opacity-60' : assistant.deleted }">
+          {{ getFullname(assistant.firstName, assistant.lastName, assistant.middleName) }}
+        </td>
+        <td class="px-2 pb-2"
+            [ngClass]="{ 'opacity-60' : assistant.deleted }">
+          @for (type of assistant.types; track type) {
+            <div>{{ getAssistantTypeName(type) }}</div>
+          }
+        </td>
+        <td class="px-2 py-2 flex gap-4">
+          @if (assistant.deleted) {
+            <button (click)="reactivateAssistant(assistant)">
+              <i class="fa-solid fa-rotate-right mr-1 text-green-600"></i>
+            </button>
+          }
+          @else {
+            <button (click)="edit.emit(assistant.id)">
+              <i class="fa-solid fa-pen mr-1 text-yellow-500"></i>
+            </button>
+            <button (click)="openDeleteDialog(assistant)">
+              <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+            </button>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

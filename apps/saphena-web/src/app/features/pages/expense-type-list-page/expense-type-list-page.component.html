@@ -1,0 +1,32 @@
+<div class="flex justify-end mb-6">
+  <button (click)="openCreateExpenseTypePanel()"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить тип
+  </button>
+</div>
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+  <td class="px-2 pb-2">№</td>
+  <td class="px-2 pb-2">Название</td>
+  @if (role === userRoleType.ROLE_CEO) {
+    <td class="px-2 pb-2"></td>
+  }
+  </thead>
+  <tbody>
+    @for (et of expenseTypes(); let i = $index; track et.id) {
+      <tr class="border-b cursor-pointer hover:bg-gray-100">
+        <td class="px-2 py-2">{{ i + 1 | leadingZeros : 2 }}</td>
+        <td class="px-2 py-2">{{ et.name }}</td>
+        @if (role === userRoleType.ROLE_CEO) {
+          <td class="px-2 py-2">
+            <button (click)="openDeleteDialog(et)">
+              <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+            </button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>
+

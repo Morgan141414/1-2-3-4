@@ -1,0 +1,39 @@
+<div class="flex gap-4 items-center">
+  <button (click)="removeProcedure(doctorProcedure().id)"
+          class="hover:text-red-500 active:scale-95">
+    <i class="fa-solid fa-minus"></i>
+  </button>
+
+  <div class="px-4 py-1 rounded text-white font-medium"
+       [ngClass]="{ 'bg-green-500' : doctorProcedure().orgProcedure.procedure.type === procedureType.GREEN,
+                    'bg-yellow-500' : doctorProcedure().orgProcedure.procedure.type === procedureType.YELLOW,
+                    'bg-blue-500' : doctorProcedure().orgProcedure.procedure.type === procedureType.BLUE,
+                    'bg-gray-500' : doctorProcedure().orgProcedure.procedure.type === procedureType.DEFAULT }">
+    {{ doctorProcedure().orgProcedure.procedure.name }}
+  </div>
+
+  <div class="saphena-input-field">
+    <input [formControl]="price"
+           placeholder="цена"
+           mask="separator"
+           thousandSeparator=" "
+           suffix=" тг."
+           class="px-2 py-1 border rounded w-32">
+  </div>
+
+  @if (price.disabled) {
+    <button (click)="price.enable()"
+            class="text-yellow-500 active:scale-95">
+      <i class="fa-solid fa-pen"></i>
+    </button>
+  } @else {
+    <button (click)="updatePrice()"
+            class="text-blue-500 active:scale-95">
+      <i class="fa-solid fa-check"></i>
+    </button>
+    <button (click)="cancel()"
+            class="active:scale-95">
+      <i class="fa-solid fa-ban"></i>
+    </button>
+  }
+</div>

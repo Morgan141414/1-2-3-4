@@ -1,0 +1,40 @@
+<div class="flex flex-col gap-2">
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Тип оплаты
+    </div>
+    <select [formControl]="paymentForm.controls.paymentType"
+            class="w-full border py-1 px-2 rounded-md cursor-pointer focus:outline-blue-400">
+      @for (pt of paymentTypes; track pt) {
+        <option [value]="pt">
+          {{ getPaymentTypeName(pt) }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Статус оплаты
+    </div>
+    <select [formControl]="paymentForm.controls.paymentStatus"
+            class="w-full border py-1 px-2 rounded-md cursor-pointer focus:outline-blue-400">
+      @for (ps of paymentStatusTypes; track ps) {
+        <option [value]="ps">
+          {{ getPaymentStatusName(ps) }}
+        </option>
+      }
+    </select>
+  </div>
+
+  <button [disabled]="paymentForm.disabled"
+          (click)="save()"
+          class="mt-4 bg-green-600 p-2 text-white rounded-md disabled:opacity-60 active:scale-95">
+    Изменить
+  </button>
+  <button [disabled]="paymentForm.disabled"
+          (click)="hideForm.emit()"
+          class="bg-gray-500 p-2 text-white rounded-md disabled:opacity-60 active:scale-95">
+    Отмена
+  </button>
+</div>

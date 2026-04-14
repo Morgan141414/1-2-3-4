@@ -1,0 +1,96 @@
+<div class="flex justify-between mb-6">
+  <div class="flex gap-4 flex-wrap">
+    <div class="px-2 rounded-md overflow-hidden border focus-within:border-blue-400">
+      <select [(ngModel)]="filter().typeId"
+              class="max-w-60 pl-1 pr-3 h-full outline-none cursor-pointer">
+        <option value="">Все</option>
+        @for (type of expenseTypes(); track type.id) {
+          <option [value]="type.id">
+            {{ type.name }}
+          </option>
+        }
+      </select>
+    </div>
+
+    <div class="flex gap-4 items-center rounded-md overflow-hidden border px-2.5 focus-within:border-blue-400">
+      <i class="fa-solid fa-magnifying-glass text-blue-500"></i>
+      <input [(ngModel)]="filter().bin"
+             placeholder="Поиск по БИН или ИИН"
+             class="border-none outline-none py-1">
+    </div>
+
+    <div class="flex gap-2 items-center">
+      <span class="text-gray-500">от</span>
+      <input type="date"
+             [(ngModel)]="filter().from"
+             class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+
+      <span class="text-gray-500">по</span>
+      <input type="date"
+             [(ngModel)]="filter().to"
+             class="py-1 px-4 rounded-md border outline-none focus:border-blue-400">
+    </div>
+
+    <button (click)="getExpenses()"
+            class="py-2 text-sm font-medium text-white bg-blue-500 px-4 rounded-md hover:bg-blue-600 active:scale-95">
+      Поиск
+    </button>
+  </div>
+
+  <button (click)="openCreateExpensePanel()"
+          class="h-fit text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-400 active:scale-95">
+    Добавить
+  </button>
+</div>
+
+<table class="w-full mb-8">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">№</td>
+    <td class="px-2 pb-2">Дата</td>
+    <td class="px-2 pb-2">Сумма</td>
+    <td class="px-2 pb-2">Тип</td>
+    <td class="px-2 pb-2">Поставщик</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (e of expenses().content; let i = $index; track e.id) {
+      <tr class="border-b">
+        <td class="px-2 py-2">
+          {{ i + 1 | leadingZeros }}
+        </td>
+        <td class="px-2 py-2">
+          {{ e.date | date: 'dd.MM.yyyy' }}
+        </td>
+        <td class="px-2 py-2">
+          {{ e.totalCost | mask : 'separator' }} тг.
+        </td>
+        <td class="px-2 py-2">
+          {{ e.type }}
+        </td>
+        <td class="px-2 py-2">
+          @if (e.vendorBin) {
+            <div>БИН: {{ e.vendorBin }}</div>
+          }
+          @if (e.vendorName) {
+            <div class="text-gray-500 text-sm">
+              {{ e.vendorName }}
+            </div>
+          }
+        </td>
+        <td class="px-2 py-2">
+          <button (click)="showDetails(e.id)"
+                  class="text-blue-400 font-medium hover:text-blue-500 active:scale-95">
+            подробнее
+          </button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+@if (expenses()!.totalPages > 1) {
+  <app-pagination [totalPages]="expenses()!.totalPages"
+                  [number]="expenses()!.number"
+                  [last]="expenses()!.last"
+                  (pageChanged)="getExpenses($event)" />
+}

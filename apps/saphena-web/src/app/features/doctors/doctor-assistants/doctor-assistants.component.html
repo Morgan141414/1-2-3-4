@@ -1,0 +1,42 @@
+<div class="flex gap-6 mb-6">
+  <select [(ngModel)]="selectedAssistant"
+          [disabled]="availableAssistants().length < 1"
+          class="min-w-60 border py-1 px-2 rounded-md focus:outline-blue-400">
+    @for (assistant of availableAssistants(); track assistant.id) {
+      <option [value]="assistant.id">
+        {{ fullname(assistant) }}
+      </option>
+    }
+  </select>
+
+  <button (click)="addAssistant()"
+          [disabled]="availableAssistants().length < 1"
+          class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md active:scale-95 disabled:opacity-60">
+    Добавить
+  </button>
+</div>
+
+<table class="w-full">
+  <thead class="border-b uppercase text-sm text-gray-500">
+    <td class="px-2 pb-2">
+      {{ role === userRoleType.ROLE_SUPERADMIN ? 'ID' : '№' }}
+    </td>
+    <td class="px-2 pb-2">ФИО</td>
+    <td class="px-2 pb-2"></td>
+  </thead>
+  <tbody>
+    @for (docAssistant of doctorAssistants(); track docAssistant.id; let i = $index) {
+      <tr class="border-b">
+        <td class="px-2 py-2">
+          {{ role === userRoleType.ROLE_SUPERADMIN ? docAssistant.assistant.id : (i + 1 | leadingZeros) }}
+        </td>
+        <td class="px-2 py-2">{{ fullname(docAssistant.assistant) }}</td>
+        <td class="px-2 py-2 flex gap-4">
+          <button (click)="openDeleteDialog(docAssistant)">
+            <i class="fa-solid fa-trash mr-1 text-rose-600"></i>
+          </button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

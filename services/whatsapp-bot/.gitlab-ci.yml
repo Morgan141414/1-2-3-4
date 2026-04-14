@@ -1,0 +1,87 @@
+stages:
+  - build
+  - deploy_dev
+  - deploy_prod
+
+variables:
+  IMAGE_PROD: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  DOCKER_BUILDKIT: 1
+
+.build-template: &build-template
+  stage: build
+  image: docker:latest
+  before_script:
+    - apk add --no-cache curl
+    - SHORT_SHA=$(echo "$CI_COMMIT_SHA" | cut -c1-7)
+    - >
+      curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" 
+      -d "chat_id=$TELEGRAM_CHAT_ID" 
+      -d "parse_mode=Markdown"
+      -d "text=🚀 *Build WHATSAPP BOT Started!* 🚀%0A 🏷 *Project*: $CI_PROJECT_NAME %0A 🌿 *Branch*: $CI_COMMIT_REF_NAME / $CI_COMMIT_REF_SLUG%0A 🔍 *Commit*: [$SHORT_SHA](https://gitlab.com/$CI_PROJECT_PATH/-/commit/$CI_COMMIT_SHA)%0A 🧑‍💻 *Author*: $CI_COMMIT_AUTHOR%0A 📝 *Message*: $CI_COMMIT_TITLE%0A 🔗 [Pipeline]($CI_PIPELINE_URL)"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  <<: *build-template
+  script:
+    - echo "Building image..."
+    - apk add --no-cache curl
+    - docker build -t $IMAGE_PROD --build-arg ENVIRONMENT=production .
+    - docker push $IMAGE_PROD
+    - >
+      curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" 
+      -d "chat_id=$TELEGRAM_CHAT_ID" 
+      -d "text=🌍 Build WHATSAPP BOT завершен! 🚀 Версия: $CI_COMMIT_REF_SLUG"
+  only:
+    - main
+    - tags
+
+deploy-dev:
+  stage: deploy_dev
+  image: alpine:latest
+  only:
+    - tags
+  before_script:
+    - apk add --no-cache openssh curl
+    - mkdir -p ~/.ssh
+    - echo "$CI_DEPLOY_DEV_KEY" | base64 -d > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan $DEV_SERVER_HOST >> ~/.ssh/known_hosts
+  script:
+    - echo "Deploying to DEV server..."
+    - ssh -o StrictHostKeyChecking=no root@$DEV_SERVER_HOST "
+        docker pull $IMAGE_PROD &&
+        cd /opt/saphena/api &&
+        sed -i 's|^SAPHENA_WHATSAPP_BOT_DOCKER_IMAGE=.*|SAPHENA_WHATSAPP_BOT_DOCKER_IMAGE=$IMAGE_PROD|' .env &&
+        docker compose -f docker-compose-dev.yml up -d saphena-whatsapp-bot --force-recreate
+        "
+    - >
+      curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" 
+      -d "chat_id=$TELEGRAM_CHAT_ID" 
+      -d "text=📡 Deploy WHATSAPP BOT DEV завершен! 🚀 Версия: $CI_COMMIT_REF_SLUG"
+
+deploy-prod:
+  stage: deploy_prod
+  image: alpine:latest
+  when: manual
+  tags:
+    - docker
+  only:
+    - tags
+  before_script:
+    - apk add --no-cache openssh curl
+    - mkdir -p ~/.ssh
+    - echo "$CI_DEPLOY_PROD_KEY" | base64 -d > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H "$PROD_SERVER_HOST" > ~/.ssh/known_hosts
+  script:
+    - echo "Deploying to PROD server..."
+    - ssh -o StrictHostKeyChecking=no root@"$PROD_SERVER_HOST" "
+        docker pull $IMAGE_PROD &&
+        cd /opt/saphena/api &&
+        sed -i 's|^SAPHENA_WHATSAPP_BOT_DOCKER_IMAGE=.*|SAPHENA_WHATSAPP_BOT_DOCKER_IMAGE=$IMAGE_PROD|' .env &&
+        docker compose -f docker-compose-prod.yml up -d saphena-whatsapp-bot --force-recreate
+      "
+    - >
+      curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage" 
+      -d "chat_id=$TELEGRAM_CHAT_ID" 
+      -d "text=⚙️ Deploy WHATSAPP BOT PROD завершен! 🚀 Версия: $CI_COMMIT_REF_SLUG"

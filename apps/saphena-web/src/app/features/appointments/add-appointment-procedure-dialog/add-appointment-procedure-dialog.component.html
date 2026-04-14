@@ -1,0 +1,40 @@
+<mat-dialog-content>
+  <form [formGroup]="form" class="flex gap-4">
+    <div class="saphena-input-field">
+      <div class="font-medium">
+        Процедура
+      </div>
+      <select formControlName="procedureId"
+              (change)="onProcedureChange()"
+              class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+        @for (dc of doctorProcedures(); track dc.id) {
+          <option [value]="dc.orgProcedure.procedure.id">
+            {{ dc.orgProcedure.procedure.name }}
+          </option>
+        }
+      </select>
+    </div>
+    <div>
+      <div class="font-medium">
+        Цена
+      </div>
+      <input formControlName="actualPrice"
+             placeholder="цена"
+             mask="separator"
+             thousandSeparator=" "
+             suffix=" тг."
+             class="px-2 py-1 border rounded w-32">
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex gap-4">
+  <button mat-dialog-close
+          class="text-sm font-medium text-white bg-gray-500 px-4 py-2 rounded-md hover:bg-gray-600 active:scale-95">
+    Отменить
+  </button>
+  <button class="text-sm font-medium text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 active:scale-95"
+          (click)="add()">
+    Добавить
+  </button>
+</mat-dialog-actions>

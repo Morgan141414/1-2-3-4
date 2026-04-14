@@ -1,0 +1,30 @@
+<mat-dialog-content>
+  <div class="flex items-end gap-3 mb-4">
+    <app-phone-input-field [controlName]="phone" />
+
+    <button class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+            [disabled]="loading() || cooldownLeft() > 0 || phone.invalid"
+            (click)="sendCode()">
+      {{ cooldownLeft() > 0 ? ('Повтор через ' + cooldownLeft() + 'с') : 'Отправить код' }}
+    </button>
+  </div>
+
+  @if (isCodeSent()) {
+    <div class="flex flex-col items-center justify-center gap-3 mb-4">
+      <app-otp-input [disabled]="loading()"
+                     (codeChange)="onCodeChange($event)"/>
+
+      <button class="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50"
+              [disabled]="loading() || codeInvalid()"
+              (click)="verify()">
+        Подтвердить
+      </button>
+    </div>
+  }
+
+  @if (statusText()) {
+    <div class="text-sm text-red-700">
+      {{ statusText() }}
+    </div>
+  }
+</mat-dialog-content>

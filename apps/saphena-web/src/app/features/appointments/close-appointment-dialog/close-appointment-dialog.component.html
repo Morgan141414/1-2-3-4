@@ -1,0 +1,25 @@
+<mat-dialog-content>
+  <div class="text-center text-lg text-black mb-4">
+    Завершить прием?
+  </div>
+  <div class="text-base pb-4">
+    <label class="saphena-input-field">
+      <textarea placeholder="Комментарий"
+                [(ngModel)]="comment"
+                class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      </textarea>
+    </label>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex gap-4">
+  <button mat-dialog-close
+          class="text-sm font-medium text-white bg-gray-500 px-4 py-2 rounded-md hover:bg-gray-600 active:scale-95">
+    Отменить
+  </button>
+  <button mat-dialog-close
+          class="text-sm font-medium text-white bg-green-500 px-4 py-2 rounded-md hover:bg-green-600 active:scale-95"
+          (click)="close()">
+    Завершить
+  </button>
+</mat-dialog-actions>

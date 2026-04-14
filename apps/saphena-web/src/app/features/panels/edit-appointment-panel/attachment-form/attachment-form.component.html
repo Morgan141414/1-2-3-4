@@ -1,0 +1,47 @@
+<div class="flex flex-col gap-2">
+  <div class="saphena-input-field">
+    <div class="font-medium">
+      Пациент
+    </div>
+    <mat-select [formControl]="patientIdControl"
+                class="w-full border py-1 px-2 rounded-md focus:outline-blue-400">
+      <div class="py-3 px-4 border-b mb-2 border-gray-400 flex justify-between">
+        <input type="text"
+               [(ngModel)]="search"
+               (ngModelChange)="getPatients()"
+               placeholder="Поиск"
+               class="bg-transparent outline-none border-none">
+        <i class="fa-solid fa-xmark cursor-pointer active:scale-95"
+           (click)="search.set('')"></i>
+      </div>
+
+      <button class="w-full px-4 py-3 text-center uppercase text-blue-500"
+              (click)="openAddPatientPanel()">
+        Добавить пациента
+      </button>
+
+      @if (patients().content && patients().content.length > 0) {
+        @for (patient of patients().content; track patient.id) {
+          <mat-option [value]="patient.id">
+            {{ getFullname(patient.firstName, patient.lastName, patient.middleName) }}
+          </mat-option>
+        }
+      } @else {
+        <mat-option>
+          Пациент не найден
+        </mat-option>
+      }
+    </mat-select>
+  </div>
+
+  <button [disabled]="patientIdControl.disabled"
+          (click)="attachPatient()"
+          class="mt-4 bg-green-600 p-2 text-white rounded-md disabled:opacity-60 active:scale-95">
+    Добавить
+  </button>
+  <button [disabled]="patientIdControl.disabled"
+          (click)="hideForm.emit()"
+          class="bg-gray-500 p-2 text-white rounded-md disabled:opacity-60 active:scale-95">
+    Отмена
+  </button>
+</div>

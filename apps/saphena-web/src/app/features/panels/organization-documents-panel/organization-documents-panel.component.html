@@ -1,0 +1,7 @@
+@for (doc of organizationDocuments(); track doc.id) {
+  <div class="border rounded-md px-3 py-2 mb-2 cursor-pointer"
+       [ngClass]="{'border-blue-500 border-2' : doc.id === activeDocId()}"
+       (click)="selectDocument(doc.id)">
+    {{ doc.name }}
+  </div>
+}

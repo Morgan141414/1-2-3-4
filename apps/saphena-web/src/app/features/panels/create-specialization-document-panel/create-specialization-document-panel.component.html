@@ -1,0 +1,18 @@
+<form [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="flex flex-col gap-4">
+  <app-input-field [controlName]="form.controls.name"
+                   label="название"
+                   placeholder="Рекомендации" />
+  <app-input-field [controlName]="form.controls.nameKk"
+                   label="название (Қаз)"
+                   placeholder="Ұсыныстар" />
+  <app-input-field [controlName]="form.controls.nameEn"
+                   label="название (Eng)"
+                   placeholder="Recommendations" />
+
+  <button [disabled]="form.disabled"
+          class="mt-4 bg-blue-600 p-2 text-white rounded-md disabled:opacity-60">
+    Добавить
+  </button>
+</form>
