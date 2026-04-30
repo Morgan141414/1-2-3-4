@@ -57,7 +57,7 @@ class OrganizationService(
             ?: throw EntityNotFoundException("Organization Not Found")
     }
 
-    fun createOrganization(request: CreateOrganizationRequest) {
+    fun createOrganization(request: CreateOrganizationRequest): Organization {
         logger.info(
             "Service: Creating organization clinicName='{}', organizationName='{}'",
             request.clinicName,
@@ -67,7 +67,7 @@ class OrganizationService(
             throw EntityExistsException("Organization already exists")
         }
 
-        organizationRepository.save(
+        return organizationRepository.save(
             Organization(
                 clinicName = request.clinicName.trim(),
                 organizationName = request.organizationName.trim(),

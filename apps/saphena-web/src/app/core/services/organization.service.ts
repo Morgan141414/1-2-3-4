@@ -2,7 +2,14 @@ import {inject, Injectable, signal} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {tap} from 'rxjs';
 
-import {CreateOrganizationRequest, Organization, OrganizationUser} from '../model/organization.model';
+import {
+  CreateOrganizationApplicationRequest,
+  CreateOrganizationRequest,
+  ModerateOrganizationApplicationRequest,
+  Organization,
+  OrganizationApplication,
+  OrganizationUser
+} from '../model/organization.model';
 import {Page, Pageable} from '../model/page.model';
 import {CreateUserRequest} from '../model/user.model';
 
@@ -13,9 +20,11 @@ export class OrganizationService {
   private readonly http = inject(HttpClient);
 
   #organizations = signal<Page<Organization>>({} as Page<Organization>);
+  #organizationApplications = signal<Page<OrganizationApplication>>({} as Page<OrganizationApplication>);
   #organizationUsers = signal<OrganizationUser[]>([]);
 
   organizations = this.#organizations.asReadonly();
+  organizationApplications = this.#organizationApplications.asReadonly();
   organizationUsers = this.#organizationUsers.asReadonly();
 
   getOrganizations(pageable?: Pageable) {
@@ -31,6 +40,25 @@ export class OrganizationService {
 
   createOrganization(req: CreateOrganizationRequest) {
     return this.http.post<void>('/api/organizations', req);
+  }
+
+  getOrganizationApplications(pageable?: Pageable) {
+    return this.http.get<Page<OrganizationApplication>>('/api/organization-applications', { params: { ...pageable }})
+      .pipe(
+        tap(resp => this.#organizationApplications.set(resp))
+      );
+  }
+
+  getOrganizationApplication(id: string) {
+    return this.http.get<OrganizationApplication>(`/api/organization-applications/${id}`);
+  }
+
+  createOrganizationApplication(req: CreateOrganizationApplicationRequest) {
+    return this.http.post<OrganizationApplication>('/api/organization-applications', req);
+  }
+
+  moderateOrganizationApplication(id: string, req: ModerateOrganizationApplicationRequest) {
+    return this.http.patch<OrganizationApplication>(`/api/organization-applications/${id}`, req);
   }
 
   updateOrganization(id: string, req: CreateOrganizationRequest) {
@@ -115,6 +143,7 @@ export class OrganizationService {
 
   clearState() {
     this.#organizations.set({} as Page<Organization>);
+    this.#organizationApplications.set({} as Page<OrganizationApplication>);
     this.#organizationUsers.set([]);
   }
 

@@ -50,6 +50,7 @@ class WebSecurityConfig(
                 it
                     .requestMatchers(
                         "/api/auth/**",
+                        "/api/organization-applications",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/swagger-ui.html"
